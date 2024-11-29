@@ -60,7 +60,7 @@ wc_regions_clean <- st_read(here("data", "Wc_regions_clean.shp"))
 
 ### Preliminary Data Exploration
 
-My first step in this project is getting an overview of the data I am. I do this by looking at the first 5 rows(head) of any shape files and by doing a quick plot of the tif files.  
+My first step in this project is getting an overview of the data I am. I do this by looking at the first 5 rows(head) of any shape files and by doing a quick plot of the tif files.
 
 ```{r}
 # View the column names of the wc_regions data
@@ -80,7 +80,83 @@ I am only going to show one plot of the surface temperature data because that is
 plot(sst_avg2008)
 ```
 
-## Process data
+#### CRS systems
+
+One of things I have learned is that mismatching CRSs is one of the things that will derail me the most when I am trying to work with geographical data sets. Lots of weird things can happen when coding and I think in projects like these about 90% of those things are caused by CRS troubles. If I were ever caught in the bad place, one of the signs would be mis-matched CRSs.
+
+In order to prevent these troubles, I will write a function that will tell me if data sets have mismatching CRSs
+
+```{r}
+# Function to determine if CRSs match
+check_crs_fun <- function(d1, d2) {
+  if (identical(st_crs(d1), st_crs(d2))) {
+    return(print("CRSs match!"))
+  } else {
+    return(print("CRSs do not match"))
+  }
+}
+```
+
+Then we can check our data sets:
+
+```{r}
+check_crs_fun(depth, sst_avg2008)
+check_crs_fun(depth, wc_regions_clean)
+check_crs_fun(wc_regions_clean, sst_avg2008)
+check_crs_fun(sst_avg2009, sst_avg2008)
+```
+
+Here we can see that none of our CRSs match.
+
+Our next step will be to change the CRSs so they are consistent. We will do this by creating a function that will change the CRS of the first inputted dataset to match the crs of the second inputted dataset. I am going to change the CRSs of the `depth` and `wc_regions_clean` datasets to match the `sst_avg` datasets.
+
+```{r}
+change_crs_fun <- function(df1, df2) {
+  if (identical(st_crs(df1), st_crs(df2))) {
+    print("no change")
+    return(df1)
+  } else {
+    df1 <- st_transform(df1, st_crs(df2))
+    print("changed first dataset's CRS to match the second dataset's CRS")
+    return(df1)
+  }
+}
+```
+
+```{r}
+# Change the CRSs to match and store in new varibles
+changed_depth <- change_crs_fun(depth, sst_avg2008)
+changed_wc_regions_clean <- change_crs_fun(depth, sst_avg2008)
+```
+
+```{r}
+# Check if the CRSs match now 
+check_crs_fun(changed_depth, sst_avg2008)
+check_crs_fun(wc_regions_clean, sst_avg2008)
+```
+
+#### Stacking Rasters
+
+# **Write about why stacking rasters is useful**
+# ** Write about why we crop rasters**
+```{r}
+# Crop all rasters to the extent of the first raster
+sst_avg2009 <- st_crop(sst_avg2009, st_bbox(sst_avg2008))
+sst_avg2010 <- st_crop(sst_avg2010, st_bbox(sst_avg2008))
+sst_avg2011 <- st_crop(sst_avg2011, st_bbox(sst_avg2008))
+sst_avg2012 <- st_crop(sst_avg2012, st_bbox(sst_avg2008))
+```
+
+```{r}
+# Stacking Rasters
+
+sst_avg_stack <- c(sst_avg2008, sst_avg2009, sst_avg2010, sst_avg2011, sst_avg2012)
+```
+
+
+Now that we know we have matching CRSs and our rasters are stacked we can move to the next step..
+
+## Processing The data!
 
 ## Find suitable locations
 
@@ -89,6 +165,7 @@ plot(sst_avg2008)
 ## Citations
 
 #### Data
+
 Flanders Marine Institute (VLIZ). (n.d.). *Exclusive Economic Zone (EEZ) boundaries*. Maritime Boundaries Database, version unknown. Retrieved from https://www.marineregions.org/eez.php (Accessed: November 29, 2024)
 
 General Bathymetric Chart of the Oceans (GEBCO) Compilation Group. (2022). *GEBCO_2022 Grid* \[Data set\]. https://doi.org/10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c (Accessed: November 29, 2024)
