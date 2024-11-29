@@ -1,0 +1,61 @@
+---
+title: "eds223_hw4_Aoverbye"
+author: "Amanda G. Overbye"
+output: 
+  html_document:
+    code_folding: true
+editor: visual
+execute: 
+  eval: true
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+## Homework Assignment 4
+
+#### Prioritizing potential aquaculture
+
+```{r}
+# Load libraries
+library(tidyverse)
+library(here) 
+library(tmap)
+library(ggplot2)
+library(stars)
+library(spDataLarge)
+```
+
+# Prepare data
+
+```{r}
+# Load data
+
+wc_regions_clean <- st_read(here("data", "Wc_regions_clean.shp"))
+```
+
+### Preliminary Data Exploration
+
+```{r}
+print(colnames(wc_regions_clean))
+```
+
+# Process data
+
+# Find suitable locations
+
+# Determine the most suitable EEZ
+
+## Creating A Function
+
+"To make your workflow generalizable, you must create a function that has the following characteristics:
+
+**arguments:**
+
+-   minimum and maximum sea surface temperature
+-   minimum and maximum depth species name
+
+**outputs:**
+
+-   map of EEZ regions colored by amount of suitable area species
+    -   species name should be included in the map’s title
