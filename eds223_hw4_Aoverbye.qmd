@@ -1,20 +1,25 @@
 ---
 title: "eds223_hw4_Aoverbye"
 author: "Amanda G. Overbye"
-output: 
-  html_document:
-    code_folding: true
-editor: visual
+date: last-modified
 execute: 
   eval: true
   warning: false
+format:
+  html:
+    code-fold: true
+    toc: true
 editor_options: 
   chunk_output_type: console
 ---
 
-## Homework Assignment 4
+# Homework Assignment 4
+
+## Fun with Fish Functions!
 
 #### Prioritizing potential aquaculture
+
+##### by Amanda Overbye
 
 # Creating A Function
 
@@ -38,12 +43,14 @@ library(tmap)
 library(ggplot2)
 library(stars)
 library(spDataLarge)
-library(FNN)
+library(dplyr)
+library(terra)
+
 ```
 
 ## Prepare data
 
-```{r}
+```{r, message=FALSE, results='hide', warning=FALSE}
 # Load data
 # Read in NOAA Sea Surface Temperature files
 sst_avg2008 <- read_stars(here("data", "average_annual_sst_2008.tif"))
@@ -62,7 +69,9 @@ wc_regions_clean <- st_read(here("data", "Wc_regions_clean.shp"))
 #### Stacking Rasters
 
 # **Write about why stacking rasters is useful**
-# ** Write about why we crop rasters**
+
+# \*\* Write about why we crop rasters\*\*
+
 ```{r}
 # Crop all rasters to the extent of the first raster
 sst_avg2009 <- st_crop(sst_avg2009, st_bbox(sst_avg2008))
@@ -81,12 +90,11 @@ sst_avg_stack <- c(sst_avg2008, sst_avg2009, sst_avg2010, sst_avg2011, sst_avg20
 plot(sst_avg_stack)
 ```
 
-
 ### Preliminary Data Exploration
 
 My first step in this project is getting an overview of the data I am. I do this by looking at the first 5 rows(head) of any shape files and by doing a quick plot of the tif files.
 
-```{r}
+```{r, message=FALSE, results='hide', warning=FALSE}
 # View the column names of the wc_regions data
 print(colnames(wc_regions_clean))
 print(head(wc_regions_clean))
@@ -104,11 +112,12 @@ I am only going to show one plot of the surface temperature data because that is
 plot(sst_avg2008)
 ```
 
-
 ## Processing The data!
 
 ## find the mean SST from 2008-2012 (e.g. create single raster of average SST)
+
 ## convert average SST from Kelvin to Celsius
+
 ## hint: subtract by 273.15
 
 First we want to get the mean over all the years.
@@ -128,18 +137,18 @@ plot(sst_mean)
 ```
 
 Our original temperature data is in Kelvin, but most people don't use Kelvin so we will change it to Celsius by subtracting 273.5.
+
 ```{r}
 # Transfer to Celsius
 celsius_mean_sst <- sst_mean - 273.15
 ```
-
-# WE MAY HAVE AN ISSUE LATER AND IT MAY HAVE TO DO WITH WARPING
 
 #### Cropping Rasters
 
 Next, we need to process the SST and depth data so that they can be combined. In this case the SST and depth data have slightly different resolutions, extents, and positions.
 
 ##### Extent
+
 In basic terms, the extent of the raster is the box around the geographic area it covers. It wouldn't be useful if the two maps covered completely separate areas. One of the easiest ways to fix mis-match extents is just to create a bounding box. A bounding box will make it so only the data within a certain geographical region will be used. For this I will take the dataset with the larger extent (depth) and crop it to match the extent of the other dataset(celsius_mean_sst). Normally this would mean the dataset with the smaller extent then becomes the bounding box.
 
 ```{r}
@@ -147,8 +156,8 @@ In basic terms, the extent of the raster is the box around the geographic area i
 cropped_depth <- st_crop(depth, st_bbox(celsius_mean_sst))
 ```
 
-
 ##### Resolution
+
 **Talk about resolution**
 
 When working with maps resolution is basically how detailed the image is. Making sure the resolution between our maps is the same is important. If we don't pay attention to resolution we can get maps that look weird and are inaccurate. Its like photoshoping a very pixelated image onto a very clear image, it looks weird and we can tell its wrong.
@@ -187,7 +196,6 @@ So now the resolutions match.
 cropped_depth <- st_crop(resampled_depth, st_bbox(celsius_mean_sst))
 ```
 
-
 In the process of matching everything, I made several different variables representing the changes I make particularly to the depth variable. In order to avoid confusion, I am going to re-assign the names.
 
 ```{r}
@@ -219,13 +227,13 @@ check_crs_fun <- function(d1, d2) {
 
 Then we can check our data sets:
 
-```{r}
+```{r, message=FALSE, results='hide', warning=FALSE}
 check_crs_fun(depth_clean, sst_clean)
 check_crs_fun(depth_clean, wc_regions_clean)
 check_crs_fun(wc_regions_clean, sst_clean)
 ```
 
-Here we can see that none of our CRSs match.
+Here I can see that two of my CRSs match.
 
 Our next step will be to change the CRSs so they are consistent. We will do this by creating a function that will change the CRS of the first inputted dataset to match the crs of the second inputted dataset. I am going to change the CRSs of the `depth` and `wc_regions_clean` datasets to match the `sst_avg` datasets.
 
@@ -254,7 +262,7 @@ check_crs_fun(depth_clean, sst_clean)
 check_crs_fun(wc_regions_clean, sst_clean)
 ```
 
-All of our CRSs should be the same now. By check st_crs(sst_avg2008), I can see that the CRS the sst_avg2008 uses is EPSG 9122. So I will now create a warning message that will tell me if there CRS is not 9122. 
+All of our CRSs should be the same now. By check st_crs(sst_avg2008), I can see that the CRS the sst_avg2008 uses is EPSG 9122. So I will now create a warning message that will tell me if there CRS is not 9122.
 
 ```{r}
 # Create crs warning function
@@ -268,16 +276,13 @@ crs_warning <- function(df) {
 }
 ```
 
-
 Because we stacked the rasters, we want to ensure that the CRSs will still match what we had before, so we are going to run our CRS matching function again.
 
 ```{r}
 crs_warning(sst_avg_stack)
 ```
 
-
 ## Find suitable locations
-
 
 ```{r}
 # Reclassify SST (keep logical 1/0 format)
@@ -292,7 +297,6 @@ suitable_sst <- st_apply(suitable_sst, c("x", "y"), function(x) as.integer(x))
 plot(suitable_sst)
 ```
 
-
 ```{r}
 # Reclassify Depth (keep logical 1/0 format)
 suitable_depth <- (depth_clean >= -24 & depth_clean <= 0)
@@ -306,14 +310,13 @@ suitable_depth <- st_apply(suitable_depth, c("x", "y"), function(x) as.integer(x
 plot(suitable_depth)
 ```
 
-
 ```{r}
 suitable_locations <- suitable_sst * suitable_depth
 ```
 
-# Messing around
+# Creating A Central California Area For Funsies
 
-```{r}
+```{r, message=FALSE, results='hide', warning=FALSE}
 head(wc_regions_clean)
 
 central_california <- wc_regions_clean %>% 
@@ -326,100 +329,18 @@ central_california_bbox <- st_bbox(central_california)
 print(central_california_bbox)
 ```
 
-```{r}
- 
-# Check for NA values
-summary(suitable_locations)
+## Creating the main function aka the
 
-# Remove NA values if necessary
-suitable_locations_clean <- suitable_locations
-suitable_locations_clean[is.na(suitable_locations_clean)] <- 0  # or any other value you prefer
+# MEGA-FUNCTION
 
-locations <- st_as_stars(suitable_locations_clean)
-
-# Now plot
-tm_shape(central_california) +
-  tm_polygons() +  # Add borders to the bounding box
-  tm_shape(locations) +
-  tm_raster() +
-  tm_shape(central_california) +
-  tm_borders()
-```
-
-
-```{r}
-suitable_locations
-```
-
-```{r}
-
-tm_shape(central_california) +
-tm_polygons() +
-tm_shape(sst_mean) +
-tm_raster() 
-  
-```
-
-```{r}
-# Select a single attribute using dplyr::select
-sst_mean <- sst_mean %>% select("average_annual_sst_2008.tif")
-```
-
-# Creating the main function
 
 # create a function that will map suitable areas
 
-First I am just going to make a function that will map an area based on temperature and depth.
+First I am just going to make a function that will map an area based on temperature and depth that will include the name of the species in the title.
 
-# Try to put them both together and it worked!
 
 ```{r}
-area_map_fun <- function(min_temp, max_temp, min_depth, max_depth) {
- 
-# Reclassify Depth (keep logical 1/0 format)
-depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
-
-# Convert logical values (TRUE/FALSE) to integers (1/0)
-depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
-
-depth_range[is.na(depth_range)] <- 0
-
-## Reclassify SST (keep logical 1/0 format)
-sst_range <- (celsius_mean_sst >= min_temp & celsius_mean_sst <= max_temp)
-
-# Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
-sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
-
-sst_range[is.na(sst_range)] <- 0
-
-combo_range <- sst_range * depth_range
-  
-combo_range[is.na(combo_range)] <- 0
-
-# Step 3: Convert suitable area to a stars object
-combo_range <- st_as_stars(combo_range)
-
-area_map <- tm_shape(central_california) +
-  tm_polygons() + 
-  tm_shape(combo_range) +
-  tm_raster() +
-  tm_shape(central_california) +
-  tm_borders()
-
-
-print(area_map)
-
-}
-```
-
-```{r}
-area_map_fun(-Inf, Inf, -Inf, Inf)
-```
-
-# Try adding species name
-
-```{r}
-```{r}
+# Create function
 area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
  
 # Reclassify Depth (keep logical 1/0 format)
@@ -451,7 +372,7 @@ area_map <- tm_shape(central_california) +
   tm_raster() +
   tm_shape(central_california) +
   tm_borders() +
-  tm_title(text = )
+  tm_layout(title = paste("Map of Depth and Temperature for", species_name))
 
 
 print(area_map)
@@ -460,140 +381,96 @@ print(area_map)
 ```
 
 ```{r}
-area_map_fun(-Inf, Inf, -Inf, Inf)
+# Use function
+area_map_fun(-10, 100, -50, -20, "Pandas")
 ```
-```
+
+I would like it to color each eez area by which area has the most amount of suitable area in it. 
+
+Because I made a variable that labeled all habitat within an area that is suitable as 1 and all that is not suitable as 0, I think I could do this by adding all the ones together, the area with the most ones would be the area with the most suitable habitat. So somehow I need to take the combo_range function, split it into the eez areas, and have it count which one has the highest value
+
+### Finding the most amount of suitable habitat in each region
+
+My thought process for this is that since we have already turned the suitable depth and temperatures into 1s and 0s, the was we can find the region with the most suitable habitat is by summing up the number of 1s in each region, and the region with the most 1s will have the most suitable habitat. Here is what we need to do to accomplish this.
+
+1. figure out a way to filter the raster values to the specifc region
+2. add up all the ones in that area
+3. Make a heat map that shows the region with the highest value as having the most suitable habitat
 
 ```{r}
-create_suitable_area_map <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
- 
- # Reclassify SST (keep logical 1/0 format)
-sst_range <- (celsius_mean_sst >= min_temp & celsius_mean_sst <= max_temp)
+# Step 1: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster
+region_raster <- st_rasterize(wc_regions_clean, suitable_locations, field = "rgn", fun = "first")
 
-# Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
-suitable_sst <- st_apply(suitable_sst, c("x", "y"), function(x) as.integer(x))
+# Step 2: Multiply suitable_locations raster by the region_raster
+suitable_by_region <- suitable_locations * region_raster
 
-# Reclassify Depth (keep logical 1/0 format)
-depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
+# Step 3: Sum values within each region
+region_sums <- st_extract(suitable_by_region, wc_regions_clean, fun = sum, na.rm = TRUE)
 
-# Convert logical values (TRUE/FALSE) to integers (1/0)
-depth_range <- st_apply(suitable_depth, c("x", "y"), function(x) as.integer(x))
-
-combo_range <- suitable_sst * suitable_depth
-  
-# Step 3: Convert suitable area to a stars object
-suitable_area_stars <- st_as_stars(combo_range)
-  
-  # Step 4: Rasterize the EEZ shapefile to match the suitable area
-  eez_raster <- st_rasterize(eez_shapefile, suitable_area_stars, fun = "first")
-  
-  # Step 5: Calculate the area of each cell in square meters
-  suitable_area_with_cells <- st_as_sf(suitable_area_stars, as_points = TRUE)
-  
-  if (nrow(suitable_area_with_cells) == 0) {
-    stop("No suitable area cells found.")
-  }
-  
-  suitable_area_with_cells$cell_area <- st_area(suitable_area_with_cells)
-  
-  # Step 6: Intersect with the EEZ regions to calculate the total suitable area by region
-  intersected_area <- st_intersection(suitable_area_with_cells, eez_shapefile)
-  
-  if (nrow(intersected_area) == 0) {
-    stop("No intersection found between suitable area and EEZ regions.")
-  }
-  
-  intersected_area$region_area <- st_area(intersected_area) / 1e6  # Convert to km²
-  
-  # Summing up the area by region
-  suitable_area_by_eez <- intersected_area %>%
-    group_by(rgn) %>%
-    summarise(total_area_km2 = sum(region_area, na.rm = TRUE))
-  
-  # Step 7: Create the map using tmap
-  map <- plot(suitable_area_by_eez)
-  
-  print(map)
-}
-
-```
-
-
-
-
-# Test can delete later
-
-```{r}
-create_suitable_area_map <- function(min_temp, max_temp, min_depth, max_depth, species_name, sst_raster, depth_raster, shapefile) {
-  
-  # Step 1: Ensure the CRS consistency
-  if (st_crs(sst_raster) != st_crs(shapefile)) {
-    shapefile <- st_transform(shapefile, st_crs(sst_raster))
-  }
-  
-  # Step 2: Filter the SST and Depth raster to get suitable cells based on input thresholds
-  suitable_sst <- st_as_stars(sst_raster >= min_sst & sst_raster <= max_sst)
-  suitable_depth <- st_as_stars(depth_raster >= min_depth & depth_raster <= max_depth)
-  
-  # Combine the suitable SST and depth conditions
-  suitable_area <- suitable_sst & suitable_depth
-  
-  # Step 3: Convert suitable area to a stars object
-  suitable_area_stars <- st_as_stars(suitable_area)
-  
-  # Step 4: Rasterize the EEZ shapefile to match the suitable area
-  eez_raster <- st_rasterize(eez_shapefile, suitable_area_stars, fun = "first")
-  
-  # Step 5: Calculate the area of each cell in square meters
-  suitable_area_with_cells <- st_as_sf(suitable_area_stars, as_points = TRUE)
-  
-  if (nrow(suitable_area_with_cells) == 0) {
-    stop("No suitable area cells found.")
-  }
-  
-  suitable_area_with_cells$cell_area <- st_area(suitable_area_with_cells)
-  
-  # Step 6: Intersect with the EEZ regions to calculate the total suitable area by region
-  intersected_area <- st_intersection(suitable_area_with_cells, eez_shapefile)
-  
-  if (nrow(intersected_area) == 0) {
-    stop("No intersection found between suitable area and EEZ regions.")
-  }
-  
-  intersected_area$region_area <- st_area(intersected_area) / 1e6  # Convert to km²
-  
-  # Summing up the area by region
-  suitable_area_by_eez <- intersected_area %>%
-    group_by(rgn) %>%
-    summarise(total_area_km2 = sum(region_area, na.rm = TRUE))
-  
-  # Step 7: Create the map using tmap
-  map <- plot(suitable_area_by_eez)
-  
-  print(map)
-}
-
-
-
-```
-
-```{r}
-# Example usage of the function
-min_temp <- 8  # Minimum sea surface temperature (°C)
-max_temp <- 18  # Maximum sea surface temperature (°C)
-min_depth <- 50  # Minimum depth (meters)
-max_depth <- 200  # Maximum depth (meters)
-species_name <- "Sample Species"
-
-# Call the function with corrected inputs
-suitable_map <- create_suitable_area_map(
-  min_sst, max_sst, min_depth, max_depth, species_name, 
-  sst_clean, depth_clean, wc_regions_clean
-)
-
+# Convert results to a data frame
+region_sums_df <- data.frame(region = wc_regions_clean$rgn, suitable_area_sum = region_sums)
+print(region_sums_df)
 ```
 
 ## Determine the most suitable EEZ
+### The functionall finished function
+
+```{r}
+# Create function
+area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
+  
+  # Reclassify Depth (keep logical 1/0 format)
+  depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
+  
+  # Convert logical values (TRUE/FALSE) to integers (1/0)
+  depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
+  
+  depth_range[is.na(depth_range)] <- 0
+  
+  ## Reclassify SST (keep logical 1/0 format)
+  sst_range <- (celsius_mean_sst >= min_temp & celsius_mean_sst <= max_temp)
+  
+  # Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
+  sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
+  
+  sst_range[is.na(sst_range)] <- 0
+  
+  combo_range <- sst_range * depth_range
+  
+  combo_range[is.na(combo_range)] <- 0
+  
+  # Convert suitable area to a stars object
+  combo_range <- st_as_stars(combo_range)
+  
+  # Step 2: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster
+  region_raster <- st_rasterize(wc_regions_clean, combo_range, field = "rgn", fun = "first")
+  
+  # Step 3: Multiply suitable_locations raster by the region_raster
+  suitable_test <- combo_range * region_raster
+  
+  # Step 4: Sum values within each region
+  region_sums <- st_extract(suitable_test, wc_regions_clean, fun = sum, na.rm = TRUE)
+  
+  # Create the heat map using the correct format (stars or raster)
+  area_map <- tm_shape(wc_regions_clean) +
+    tm_polygons() +  # Draw the boundaries of regions
+    tm_shape(region_sums) +
+    tm_fill(palette = "YlGnBu", title = "Suitable Habitat Area") +  # Color by suitable habitat area
+    tm_borders() +  # Add borders to the regions
+    tm_layout(title = paste("Map of Depth and Temperature for", species_name))
+  
+  # Print the map
+  print(area_map)
+}
+```
+
+```{r}
+# Use function
+area_map_fun(0, 10, -Inf, Inf, "Pandas")
+```
+
+
+
 
 ## Citations
 
