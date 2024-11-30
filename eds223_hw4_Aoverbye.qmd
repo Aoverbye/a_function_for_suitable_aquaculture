@@ -339,7 +339,7 @@ locations <- st_as_stars(suitable_locations_clean)
 
 # Now plot
 tm_shape(central_california) +
-  tm_borders() +  # Add borders to the bounding box
+  tm_polygons() +  # Add borders to the bounding box
   tm_shape(locations) +
   tm_raster() +
   tm_shape(central_california) +
@@ -365,14 +365,170 @@ tm_raster()
 sst_mean <- sst_mean %>% select("average_annual_sst_2008.tif")
 ```
 
+# Creating the main function
+
+# create a function that will map suitable areas
+
+First I am just going to make a function that will map an area based on temperature and depth.
+
+# Try to put them both together and it worked!
+
+```{r}
+area_map_fun <- function(min_temp, max_temp, min_depth, max_depth) {
+ 
+# Reclassify Depth (keep logical 1/0 format)
+depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
+
+# Convert logical values (TRUE/FALSE) to integers (1/0)
+depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
+
+depth_range[is.na(depth_range)] <- 0
+
+## Reclassify SST (keep logical 1/0 format)
+sst_range <- (celsius_mean_sst >= min_temp & celsius_mean_sst <= max_temp)
+
+# Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
+sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
+
+sst_range[is.na(sst_range)] <- 0
+
+combo_range <- sst_range * depth_range
+  
+combo_range[is.na(combo_range)] <- 0
+
+# Step 3: Convert suitable area to a stars object
+combo_range <- st_as_stars(combo_range)
+
+area_map <- tm_shape(central_california) +
+  tm_polygons() + 
+  tm_shape(combo_range) +
+  tm_raster() +
+  tm_shape(central_california) +
+  tm_borders()
+
+
+print(area_map)
+
+}
+```
+
+```{r}
+area_map_fun(-Inf, Inf, -Inf, Inf)
+```
+
+# Try adding species name
+
+```{r}
+```{r}
+area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
+ 
+# Reclassify Depth (keep logical 1/0 format)
+depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
+
+# Convert logical values (TRUE/FALSE) to integers (1/0)
+depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
+
+depth_range[is.na(depth_range)] <- 0
+
+## Reclassify SST (keep logical 1/0 format)
+sst_range <- (celsius_mean_sst >= min_temp & celsius_mean_sst <= max_temp)
+
+# Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
+sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
+
+sst_range[is.na(sst_range)] <- 0
+
+combo_range <- sst_range * depth_range
+  
+combo_range[is.na(combo_range)] <- 0
+
+# Step 3: Convert suitable area to a stars object
+combo_range <- st_as_stars(combo_range)
+
+area_map <- tm_shape(central_california) +
+  tm_polygons() + 
+  tm_shape(combo_range) +
+  tm_raster() +
+  tm_shape(central_california) +
+  tm_borders() +
+  tm_title(text = )
+
+
+print(area_map)
+
+}
+```
+
+```{r}
+area_map_fun(-Inf, Inf, -Inf, Inf)
+```
+```
+
+```{r}
+create_suitable_area_map <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
+ 
+ # Reclassify SST (keep logical 1/0 format)
+sst_range <- (celsius_mean_sst >= min_temp & celsius_mean_sst <= max_temp)
+
+# Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
+suitable_sst <- st_apply(suitable_sst, c("x", "y"), function(x) as.integer(x))
+
+# Reclassify Depth (keep logical 1/0 format)
+depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
+
+# Convert logical values (TRUE/FALSE) to integers (1/0)
+depth_range <- st_apply(suitable_depth, c("x", "y"), function(x) as.integer(x))
+
+combo_range <- suitable_sst * suitable_depth
+  
+# Step 3: Convert suitable area to a stars object
+suitable_area_stars <- st_as_stars(combo_range)
+  
+  # Step 4: Rasterize the EEZ shapefile to match the suitable area
+  eez_raster <- st_rasterize(eez_shapefile, suitable_area_stars, fun = "first")
+  
+  # Step 5: Calculate the area of each cell in square meters
+  suitable_area_with_cells <- st_as_sf(suitable_area_stars, as_points = TRUE)
+  
+  if (nrow(suitable_area_with_cells) == 0) {
+    stop("No suitable area cells found.")
+  }
+  
+  suitable_area_with_cells$cell_area <- st_area(suitable_area_with_cells)
+  
+  # Step 6: Intersect with the EEZ regions to calculate the total suitable area by region
+  intersected_area <- st_intersection(suitable_area_with_cells, eez_shapefile)
+  
+  if (nrow(intersected_area) == 0) {
+    stop("No intersection found between suitable area and EEZ regions.")
+  }
+  
+  intersected_area$region_area <- st_area(intersected_area) / 1e6  # Convert to km²
+  
+  # Summing up the area by region
+  suitable_area_by_eez <- intersected_area %>%
+    group_by(rgn) %>%
+    summarise(total_area_km2 = sum(region_area, na.rm = TRUE))
+  
+  # Step 7: Create the map using tmap
+  map <- plot(suitable_area_by_eez)
+  
+  print(map)
+}
+
+```
+
+
+
+
 # Test can delete later
 
 ```{r}
-create_suitable_area_map <- function(min_sst, max_sst, min_depth, max_depth, species_name, sst_raster, depth_raster, eez_shapefile) {
+create_suitable_area_map <- function(min_temp, max_temp, min_depth, max_depth, species_name, sst_raster, depth_raster, shapefile) {
   
   # Step 1: Ensure the CRS consistency
-  if (st_crs(sst_raster) != st_crs(eez_shapefile)) {
-    eez_shapefile <- st_transform(eez_shapefile, st_crs(sst_raster))
+  if (st_crs(sst_raster) != st_crs(shapefile)) {
+    shapefile <- st_transform(shapefile, st_crs(sst_raster))
   }
   
   # Step 2: Filter the SST and Depth raster to get suitable cells based on input thresholds
@@ -423,8 +579,8 @@ create_suitable_area_map <- function(min_sst, max_sst, min_depth, max_depth, spe
 
 ```{r}
 # Example usage of the function
-min_sst <- 8  # Minimum sea surface temperature (°C)
-max_sst <- 18  # Maximum sea surface temperature (°C)
+min_temp <- 8  # Minimum sea surface temperature (°C)
+max_temp <- 18  # Maximum sea surface temperature (°C)
 min_depth <- 50  # Minimum depth (meters)
 max_depth <- 200  # Maximum depth (meters)
 species_name <- "Sample Species"
