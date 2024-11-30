@@ -131,7 +131,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stars)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spDataLarge)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spDataLarge)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FNN)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="prepare-data" class="level2">
 <h2 class="anchored" data-anchor-id="prepare-data">Prepare data</h2>
@@ -159,16 +160,48 @@ Bounding box:  xmin: -129.1635 ymin: 30.542 xmax: -117.097 ymax: 49.00031
 Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
+<section id="stacking-rasters" class="level4">
+<h4 class="anchored" data-anchor-id="stacking-rasters">Stacking Rasters</h4>
+</section>
+</section>
+</section>
+<section id="write-about-why-stacking-rasters-is-useful" class="level1">
+<h1><strong>Write about why stacking rasters is useful</strong></h1>
+</section>
+<section id="write-about-why-we-crop-rasters" class="level1">
+<h1>** Write about why we crop rasters**</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crop all rasters to the extent of the first raster</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sst_avg2009 <span class="ot">&lt;-</span> <span class="fu">st_crop</span>(sst_avg2009, <span class="fu">st_bbox</span>(sst_avg2008))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>sst_avg2010 <span class="ot">&lt;-</span> <span class="fu">st_crop</span>(sst_avg2010, <span class="fu">st_bbox</span>(sst_avg2008))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>sst_avg2011 <span class="ot">&lt;-</span> <span class="fu">st_crop</span>(sst_avg2011, <span class="fu">st_bbox</span>(sst_avg2008))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>sst_avg2012 <span class="ot">&lt;-</span> <span class="fu">st_crop</span>(sst_avg2012, <span class="fu">st_bbox</span>(sst_avg2008))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stacking Rasters</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sst_avg_stack <span class="ot">&lt;-</span> <span class="fu">c</span>(sst_avg2008, sst_avg2009, sst_avg2010, sst_avg2011, sst_avg2012)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot to view</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sst_avg_stack)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 <section id="preliminary-data-exploration" class="level3">
 <h3 class="anchored" data-anchor-id="preliminary-data-exploration">Preliminary Data Exploration</h3>
 <p>My first step in this project is getting an overview of the data I am. I do this by looking at the first 5 rows(head) of any shape files and by doing a quick plot of the tif files.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View the column names of the wc_regions data</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">colnames</span>(wc_regions_clean))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View the column names of the wc_regions data</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">colnames</span>(wc_regions_clean))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "rgn"      "rgn_key"  "area_m2"  "rgn_id"   "area_km2" "geometry"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(wc_regions_clean))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(wc_regions_clean))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 5 features and 5 fields
 Geometry type: MULTIPOLYGON
@@ -190,68 +223,421 @@ Geodetic CRS:  WGS 84
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot bathymetry data</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(depth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot bathymetry data</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(depth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>I am only going to show one plot of the surface temperature data because that is all I need right now to get an idea of how it will look.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the temperature data</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sst_avg2008)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the temperature data</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sst_avg2008)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+</section>
+<section id="processing-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="processing-the-data">Processing The data!</h2>
+</section>
+<section id="find-the-mean-sst-from-2008-2012-e.g.-create-single-raster-of-average-sst" class="level2">
+<h2 class="anchored" data-anchor-id="find-the-mean-sst-from-2008-2012-e.g.-create-single-raster-of-average-sst">find the mean SST from 2008-2012 (e.g.&nbsp;create single raster of average SST)</h2>
+</section>
+<section id="convert-average-sst-from-kelvin-to-celsius" class="level2">
+<h2 class="anchored" data-anchor-id="convert-average-sst-from-kelvin-to-celsius">convert average SST from Kelvin to Celsius</h2>
+</section>
+<section id="hint-subtract-by-273.15" class="level2">
+<h2 class="anchored" data-anchor-id="hint-subtract-by-273.15">hint: subtract by 273.15</h2>
+<p>First we want to get the mean over all the years.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sst_mean <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(sst_avg_stack, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">FUN =</span> mean)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Select a single attribute using dplyr::select</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>sst_mean <span class="ot">&lt;-</span> sst_mean <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"average_annual_sst_2008.tif"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then we want to view the plot to ensure we did not destroy the data in the process.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View plot </span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sst_mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Our original temperature data is in Kelvin, but most people don’t use Kelvin so we will change it to Celsius by subtracting 273.5.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transfer to Celsius</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>celsius_mean_sst <span class="ot">&lt;-</span> sst_mean <span class="sc">-</span> <span class="fl">273.15</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="we-may-have-an-issue-later-and-it-may-have-to-do-with-warping" class="level1">
+<h1>WE MAY HAVE AN ISSUE LATER AND IT MAY HAVE TO DO WITH WARPING</h1>
+<section id="cropping-rasters" class="level4">
+<h4 class="anchored" data-anchor-id="cropping-rasters">Cropping Rasters</h4>
+<p>Next, we need to process the SST and depth data so that they can be combined. In this case the SST and depth data have slightly different resolutions, extents, and positions.</p>
+<section id="extent" class="level5">
+<h5 class="anchored" data-anchor-id="extent">Extent</h5>
+<p>In basic terms, the extent of the raster is the box around the geographic area it covers. It wouldn’t be useful if the two maps covered completely separate areas. One of the easiest ways to fix mis-match extents is just to create a bounding box. A bounding box will make it so only the data within a certain geographical region will be used. For this I will take the dataset with the larger extent (depth) and crop it to match the extent of the other dataset(celsius_mean_sst). Normally this would mean the dataset with the smaller extent then becomes the bounding box.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crop the depth data to the mean_sst_celsius data</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>cropped_depth <span class="ot">&lt;-</span> <span class="fu">st_crop</span>(depth, <span class="fu">st_bbox</span>(celsius_mean_sst))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="resolution" class="level5">
+<h5 class="anchored" data-anchor-id="resolution">Resolution</h5>
+<p><strong>Talk about resolution</strong></p>
+<p>When working with maps resolution is basically how detailed the image is. Making sure the resolution between our maps is the same is important. If we don’t pay attention to resolution we can get maps that look weird and are inaccurate. Its like photoshoping a very pixelated image onto a very clear image, it looks weird and we can tell its wrong.</p>
+<p>Like before we are going to try a function for this as well.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to determine if Resolutions match</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>check_res_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(d1, d2) {</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">identical</span>(<span class="fu">st_dimensions</span>(d1), <span class="fu">st_dimensions</span>(d2))) {</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">print</span>(<span class="st">"Resolutions match!"</span>))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">print</span>(<span class="st">"Resolutions do not match"</span>))</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the function to check the resolutions</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_res_fun</span>(cropped_depth, celsius_mean_sst)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Resolutions do not match"</code></pre>
+</div>
+</div>
+<p>I can see that are resolutions do not match, so I must make them match myself.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resample the depth data to the mean_sst_celsius data using the near method</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>resampled_depth <span class="ot">&lt;-</span> <span class="fu">st_warp</span>(cropped_depth, celsius_mean_sst, <span class="at">method =</span> <span class="st">"near"</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if the resolutions match now</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">check_res_fun</span>(resampled_depth, celsius_mean_sst)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Resolutions match!"</code></pre>
+</div>
+</div>
+<p>So now the resolutions match.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>cropped_depth <span class="ot">&lt;-</span> <span class="fu">st_crop</span>(resampled_depth, <span class="fu">st_bbox</span>(celsius_mean_sst))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In the process of matching everything, I made several different variables representing the changes I make particularly to the depth variable. In order to avoid confusion, I am going to re-assign the names.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-assign cropped_depth</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>depth_clean <span class="ot">&lt;-</span> cropped_depth</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>sst_clean <span class="ot">&lt;-</span> celsius_mean_sst</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>test_stack <span class="ot">&lt;-</span> <span class="fu">c</span>(depth_clean, sst_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
 <section id="crs-systems" class="level4">
 <h4 class="anchored" data-anchor-id="crs-systems">CRS systems</h4>
 <p>One of things I have learned is that mismatching CRSs is one of the things that will derail me the most when I am trying to work with geographical data sets. Lots of weird things can happen when coding and I think in projects like these about 90% of those things are caused by CRS troubles. If I were ever caught in the bad place, one of the signs would be mis-matched CRSs.</p>
 <p>In order to prevent these troubles, I will write a function that will tell me if data sets have mismatching CRSs</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to determine if CRSs match</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>check_crs_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(d1, d2) {</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the CRS of the two datasets match</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">identical</span>(<span class="fu">st_crs</span>(d1), <span class="fu">st_crs</span>(d2))) {</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">print</span>(<span class="st">"CRSs match!"</span>))</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">print</span>(<span class="st">"CRSs do not match"</span>))</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to determine if CRSs match</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>check_crs_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(d1, d2) {</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">identical</span>(<span class="fu">st_crs</span>(d1), <span class="fu">st_crs</span>(d2))) {</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">print</span>(<span class="st">"CRSs match!"</span>))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">print</span>(<span class="st">"CRSs do not match"</span>))</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Then we can check our data sets:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_crs_fun</span>(depth, sst_avg2008)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_crs_fun</span>(depth_clean, sst_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "CRSs match!"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_crs_fun</span>(depth_clean, wc_regions_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "CRSs do not match"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_crs_fun</span>(depth, wc_regions_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "CRSs do not match"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_crs_fun</span>(wc_regions_clean, sst_avg2008)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_crs_fun</span>(wc_regions_clean, sst_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "CRSs do not match"</code></pre>
 </div>
 </div>
 <p>Here we can see that none of our CRSs match.</p>
-</section>
-</section>
-</section>
-<section id="process-data" class="level2">
-<h2 class="anchored" data-anchor-id="process-data">Process data</h2>
+<p>Our next step will be to change the CRSs so they are consistent. We will do this by creating a function that will change the CRS of the first inputted dataset to match the crs of the second inputted dataset. I am going to change the CRSs of the <code>depth</code> and <code>wc_regions_clean</code> datasets to match the <code>sst_avg</code> datasets.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>change_crs_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(df1, df2) {</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">identical</span>(<span class="fu">st_crs</span>(df1), <span class="fu">st_crs</span>(df2))) {</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"no change"</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(df1)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    df1 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(df1, <span class="fu">st_crs</span>(df2))</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"changed first dataset's CRS to match the second dataset's CRS"</span>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(df1)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Change the CRSs to match and store in new varibles</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>depth_clean <span class="ot">&lt;-</span> <span class="fu">change_crs_fun</span>(depth_clean, sst_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "no change"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>wc_regions_clean <span class="ot">&lt;-</span> <span class="fu">change_crs_fun</span>(wc_regions_clean, sst_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "changed first dataset's CRS to match the second dataset's CRS"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if the CRSs match now </span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">check_crs_fun</span>(depth_clean, sst_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "CRSs match!"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_crs_fun</span>(wc_regions_clean, sst_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "CRSs match!"</code></pre>
+</div>
+</div>
+<p>All of our CRSs should be the same now. By check st_crs(sst_avg2008), I can see that the CRS the sst_avg2008 uses is EPSG 9122. So I will now create a warning message that will tell me if there CRS is not 9122.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create crs warning function</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>crs_warning <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the CRS is different from EPSG:9122</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">st_crs</span>(df) <span class="sc">!=</span> <span class="fu">st_crs</span>(sst_avg2008)) {</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">"Warning: The CRS of the dataset is not EPSG:9122!"</span>)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"The CRS is EPSG:9122."</span>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Because we stacked the rasters, we want to ensure that the CRSs will still match what we had before, so we are going to run our CRS matching function again.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">crs_warning</span>(sst_avg_stack)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="find-suitable-locations" class="level2">
 <h2 class="anchored" data-anchor-id="find-suitable-locations">Find suitable locations</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify SST (keep logical 1/0 format)</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>suitable_sst <span class="ot">&lt;-</span> (celsius_mean_sst <span class="sc">&gt;=</span> <span class="dv">8</span> <span class="sc">&amp;</span> celsius_mean_sst <span class="sc">&lt;=</span> <span class="dv">18</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>suitable_sst <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(suitable_sst, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(suitable_sst)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify Depth (keep logical 1/0 format)</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>suitable_depth <span class="ot">&lt;-</span> (depth_clean <span class="sc">&gt;=</span> <span class="sc">-</span><span class="dv">24</span> <span class="sc">&amp;</span> depth_clean <span class="sc">&lt;=</span> <span class="dv">0</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0)</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>suitable_depth <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(suitable_depth, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(suitable_depth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>suitable_locations <span class="ot">&lt;-</span> suitable_sst <span class="sc">*</span> suitable_depth</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
+</section>
+<section id="messing-around" class="level1">
+<h1>Messing around</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(wc_regions_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 5 features and 5 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -129.1635 ymin: 30.542 xmax: -117.097 ymax: 49.00031
+Geodetic CRS:  WGS 84
+                  rgn rgn_key      area_m2 rgn_id  area_km2
+1              Oregon      OR 179994061293      1 179994.06
+2 Northern California    CA-N 164378809215      2 164378.81
+3  Central California    CA-C 202738329147      3 202738.33
+4 Southern California    CA-S 206860777840      4 206860.78
+5          Washington      WA  66898309678      5  66898.31
+                        geometry
+1 MULTIPOLYGON (((-123.4318 4...
+2 MULTIPOLYGON (((-124.2102 4...
+3 MULTIPOLYGON (((-122.9928 3...
+4 MULTIPOLYGON (((-120.6505 3...
+5 MULTIPOLYGON (((-122.7675 4...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>central_california <span class="ot">&lt;-</span> wc_regions_clean <span class="sc">%&gt;%</span> </span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(rgn <span class="sc">==</span> <span class="st">"Central California"</span>)  <span class="co"># Filter by the region name</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Get the bounding box of Central California</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>central_california_bbox <span class="ot">&lt;-</span> <span class="fu">st_bbox</span>(central_california)</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the bounding box</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(central_california_bbox)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      xmin       ymin       xmax       ymax 
+-127.90688   33.59882 -120.63050   38.28022 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for NA values</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(suitable_locations)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                            Length Class  Mode   
+average_annual_sst_2008.tif 195840 -none- numeric</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove NA values if necessary</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>suitable_locations_clean <span class="ot">&lt;-</span> suitable_locations</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>suitable_locations_clean[<span class="fu">is.na</span>(suitable_locations_clean)] <span class="ot">&lt;-</span> <span class="dv">0</span>  <span class="co"># or any other value you prefer</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>locations <span class="ot">&lt;-</span> <span class="fu">st_as_stars</span>(suitable_locations_clean)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Now plot</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(central_california) <span class="sc">+</span></span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span>  <span class="co"># Add borders to the bounding box</span></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(locations) <span class="sc">+</span></span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_raster</span>() <span class="sc">+</span></span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(central_california) <span class="sc">+</span></span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>suitable_locations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>stars object with 2 dimensions and 1 attribute
+attribute(s):
+                             Min. 1st Qu. Median       Mean 3rd Qu. Max.  NA's
+average_annual_sst_2008.tif     0       0      0 0.00466948       0    1 82337
+dimension(s):
+  from  to offset    delta refsys point x/y
+x    1 408   -132  0.04166 WGS 84 FALSE [x]
+y    1 480  49.99 -0.04166 WGS 84 FALSE [y]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(central_california) <span class="sc">+</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(sst_mean) <span class="sc">+</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_raster</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select a single attribute using dplyr::select</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>sst_mean <span class="ot">&lt;-</span> sst_mean <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"average_annual_sst_2008.tif"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="test-can-delete-later" class="level1">
+<h1>Test can delete later</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>create_suitable_area_map <span class="ot">&lt;-</span> <span class="cf">function</span>(min_sst, max_sst, min_depth, max_depth, species_name, sst_raster, depth_raster, eez_shapefile) {</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 1: Ensure the CRS consistency</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">st_crs</span>(sst_raster) <span class="sc">!=</span> <span class="fu">st_crs</span>(eez_shapefile)) {</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>    eez_shapefile <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(eez_shapefile, <span class="fu">st_crs</span>(sst_raster))</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2: Filter the SST and Depth raster to get suitable cells based on input thresholds</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  suitable_sst <span class="ot">&lt;-</span> <span class="fu">st_as_stars</span>(sst_raster <span class="sc">&gt;=</span> min_sst <span class="sc">&amp;</span> sst_raster <span class="sc">&lt;=</span> max_sst)</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>  suitable_depth <span class="ot">&lt;-</span> <span class="fu">st_as_stars</span>(depth_raster <span class="sc">&gt;=</span> min_depth <span class="sc">&amp;</span> depth_raster <span class="sc">&lt;=</span> max_depth)</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine the suitable SST and depth conditions</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>  suitable_area <span class="ot">&lt;-</span> suitable_sst <span class="sc">&amp;</span> suitable_depth</span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 3: Convert suitable area to a stars object</span></span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>  suitable_area_stars <span class="ot">&lt;-</span> <span class="fu">st_as_stars</span>(suitable_area)</span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 4: Rasterize the EEZ shapefile to match the suitable area</span></span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a>  eez_raster <span class="ot">&lt;-</span> <span class="fu">st_rasterize</span>(eez_shapefile, suitable_area_stars, <span class="at">fun =</span> <span class="st">"first"</span>)</span>
+<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 5: Calculate the area of each cell in square meters</span></span>
+<span id="cb59-22"><a href="#cb59-22" aria-hidden="true" tabindex="-1"></a>  suitable_area_with_cells <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(suitable_area_stars, <span class="at">as_points =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb59-23"><a href="#cb59-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-24"><a href="#cb59-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(suitable_area_with_cells) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb59-25"><a href="#cb59-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"No suitable area cells found."</span>)</span>
+<span id="cb59-26"><a href="#cb59-26" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb59-27"><a href="#cb59-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-28"><a href="#cb59-28" aria-hidden="true" tabindex="-1"></a>  suitable_area_with_cells<span class="sc">$</span>cell_area <span class="ot">&lt;-</span> <span class="fu">st_area</span>(suitable_area_with_cells)</span>
+<span id="cb59-29"><a href="#cb59-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-30"><a href="#cb59-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 6: Intersect with the EEZ regions to calculate the total suitable area by region</span></span>
+<span id="cb59-31"><a href="#cb59-31" aria-hidden="true" tabindex="-1"></a>  intersected_area <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(suitable_area_with_cells, eez_shapefile)</span>
+<span id="cb59-32"><a href="#cb59-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-33"><a href="#cb59-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(intersected_area) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb59-34"><a href="#cb59-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"No intersection found between suitable area and EEZ regions."</span>)</span>
+<span id="cb59-35"><a href="#cb59-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb59-36"><a href="#cb59-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-37"><a href="#cb59-37" aria-hidden="true" tabindex="-1"></a>  intersected_area<span class="sc">$</span>region_area <span class="ot">&lt;-</span> <span class="fu">st_area</span>(intersected_area) <span class="sc">/</span> <span class="fl">1e6</span>  <span class="co"># Convert to km²</span></span>
+<span id="cb59-38"><a href="#cb59-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-39"><a href="#cb59-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Summing up the area by region</span></span>
+<span id="cb59-40"><a href="#cb59-40" aria-hidden="true" tabindex="-1"></a>  suitable_area_by_eez <span class="ot">&lt;-</span> intersected_area <span class="sc">%&gt;%</span></span>
+<span id="cb59-41"><a href="#cb59-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(rgn) <span class="sc">%&gt;%</span></span>
+<span id="cb59-42"><a href="#cb59-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">total_area_km2 =</span> <span class="fu">sum</span>(region_area, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb59-43"><a href="#cb59-43" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-44"><a href="#cb59-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 7: Create the map using tmap</span></span>
+<span id="cb59-45"><a href="#cb59-45" aria-hidden="true" tabindex="-1"></a>  map <span class="ot">&lt;-</span> <span class="fu">plot</span>(suitable_area_by_eez)</span>
+<span id="cb59-46"><a href="#cb59-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb59-47"><a href="#cb59-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(map)</span>
+<span id="cb59-48"><a href="#cb59-48" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example usage of the function</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>min_sst <span class="ot">&lt;-</span> <span class="dv">8</span>  <span class="co"># Minimum sea surface temperature (°C)</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>max_sst <span class="ot">&lt;-</span> <span class="dv">18</span>  <span class="co"># Maximum sea surface temperature (°C)</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>min_depth <span class="ot">&lt;-</span> <span class="dv">50</span>  <span class="co"># Minimum depth (meters)</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>max_depth <span class="ot">&lt;-</span> <span class="dv">200</span>  <span class="co"># Maximum depth (meters)</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>species_name <span class="ot">&lt;-</span> <span class="st">"Sample Species"</span></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Call the function with corrected inputs</span></span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>suitable_map <span class="ot">&lt;-</span> <span class="fu">create_suitable_area_map</span>(</span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>  min_sst, max_sst, min_depth, max_depth, species_name, </span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>  sst_clean, depth_clean, wc_regions_clean</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NULL</code></pre>
+</div>
+</div>
 <section id="determine-the-most-suitable-eez" class="level2">
 <h2 class="anchored" data-anchor-id="determine-the-most-suitable-eez">Determine the most suitable EEZ</h2>
 </section>
