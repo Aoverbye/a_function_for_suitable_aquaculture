@@ -13,27 +13,15 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Homework Assignment 4
+# EDS223: Homework Assignment 4
 
 ## Fun with Fish Functions!
 
-#### Prioritizing potential aquaculture
+#### Creating A Function That Will Map Suitable EEZ Regions Based On Species
 
-##### by Amanda Overbye
+##### by Amanda G. Overbye
 
-# Creating A Function
-
-"To make your workflow generalizable, you must create a function that has the following characteristics:
-
-**arguments:**
-
--   minimum and maximum sea surface temperature
--   minimum and maximum depth species name
-
-**outputs:**
-
--   map of EEZ regions colored by amount of suitable area species
-    -   species name should be included in the map’s title
+The goal of this project is to have one single function that can take information about the depths a species can live in, the suitable temperature range for the species, and the species name, and produce a map of the West Coast showing which EEZ regions are ideal for aquaculture of that species. This function is going to be doing a lot, so from now on I will refer to it as the Mega Function™. Throughout this project, I will be giving an overview of how I accomplish this task and narrating along the way so hopefully whoever is reading this can make a similar function if you want to! I will be explaining what I am doing as I do it, and there will be code chunks if you want to follow along in the programming.
 
 ```{r}
 # Load libraries
@@ -48,7 +36,9 @@ library(terra)
 
 ```
 
-## Prepare data
+### Preparing data
+
+To start off this project I have some data I need to read in and process. This data includes .tif files with data about sea surface temperature (SST) from the years 2008-2012, bathymetry tif files of the ocean, and a shapefile with “exclusive economic zone” or EEZ data.
 
 ```{r, message=FALSE, results='hide', warning=FALSE}
 # Load data
@@ -66,14 +56,29 @@ depth <- read_stars(here("data", "depth.tif"))
 wc_regions_clean <- st_read(here("data", "Wc_regions_clean.shp"))
 ```
 
-#### Stacking Rasters
+### Understanding The Data: Quick Plots
 
-# **Write about why stacking rasters is useful**
-
-# \*\* Write about why we crop rasters\*\*
+Whenever I begin a project, I like to make some quick plots and do some preliminary data exploration so I know what I am dealing with. Here are three raw plots:
 
 ```{r}
-# Crop all rasters to the extent of the first raster
+# Plot bathymetry data
+plot(depth)
+
+# Plot the temperature data
+plot(sst_avg2008)
+
+# Plot wc_regions_clean
+plot(wc_regions_clean)
+```
+
+Fabulous! Now I can move on to my next step.
+
+### Stacking Rasters
+
+The SST data comes in the form of 5 different rasters, one raster file for each year. I plan on working with average SST for this project so I want to be able to get the average temperatures for all the years. In order to do that, I will need to stack the raster so they can all neatly be one thing. The first step is to crop the rasters so they all have the same dimensions, we will talk more about cropping later. After they are cropped, I can stack them. I always like to plot data after stacking so I can make sure the stack is something I can actually use.
+
+```{r}
+# Crop each SST raster (for 2009-2012) to match the bounding box of the 2008 SST raster
 sst_avg2009 <- st_crop(sst_avg2009, st_bbox(sst_avg2008))
 sst_avg2010 <- st_crop(sst_avg2010, st_bbox(sst_avg2008))
 sst_avg2011 <- st_crop(sst_avg2011, st_bbox(sst_avg2008))
@@ -81,7 +86,7 @@ sst_avg2012 <- st_crop(sst_avg2012, st_bbox(sst_avg2008))
 ```
 
 ```{r}
-# Stacking Rasters
+# Combine the individual SST average rasters for the years 2008 to 2012 into a single stack
 sst_avg_stack <- c(sst_avg2008, sst_avg2009, sst_avg2010, sst_avg2011, sst_avg2012)
 ```
 
@@ -90,52 +95,32 @@ sst_avg_stack <- c(sst_avg2008, sst_avg2009, sst_avg2010, sst_avg2011, sst_avg20
 plot(sst_avg_stack)
 ```
 
-### Preliminary Data Exploration
+Now with the rasters stacked I can begin to process the data.
 
-My first step in this project is getting an overview of the data I am. I do this by looking at the first 5 rows(head) of any shape files and by doing a quick plot of the tif files.
+### Processing The Data
 
-```{r, message=FALSE, results='hide', warning=FALSE}
-# View the column names of the wc_regions data
-print(colnames(wc_regions_clean))
-print(head(wc_regions_clean))
-```
+To best know which EEZ areas will be the most suitable for different species, I want to average the SST information over the years and base the temperature suitability off of that.
 
 ```{r}
-# Plot bathymetry data
-plot(depth)
-```
-
-I am only going to show one plot of the surface temperature data because that is all I need right now to get an idea of how it will look.
-
-```{r}
-# Plot the temperature data
-plot(sst_avg2008)
-```
-
-## Processing The data!
-
-## find the mean SST from 2008-2012 (e.g. create single raster of average SST)
-
-First we want to get the mean over all the years.
-
-```{r}
+# Apply the 'mean' function over the entire stack of SST rasters (sst_avg_stack) across the "x" and "y" dimensions.
+# This will calculate the mean SST value for each grid cell across all years in the stack.
 sst_mean <- st_apply(sst_avg_stack, c("x", "y"), FUN = mean)
 
 # Select a single attribute using dplyr::select
+# This step isolates the specific SST attribute from the result of the 'st_apply' operation
 sst_mean <- sst_mean %>% select("average_annual_sst_2008.tif")
 ```
 
-Then we want to view the plot to ensure we did not destroy the data in the process.
+Here is what the plot looks like with just the mean.
 
 ```{r}
 # View plot 
 plot(sst_mean)
 ```
 
-Our original temperature data is in Kelvin, but most people don't use Kelvin so we will change it to Celsius by subtracting 273.5.
-
 ```{r}
-# Transfer to Celsius
+# The original temperature data is in Kelvin, but most people don't use Kelvin so I will change it to Celsius by # subtracting 273.5.
+# Subtract 273.15 to convert to Celsius
 celsius_mean_sst <- sst_mean - 273.15
 ```
 
@@ -145,7 +130,7 @@ Next, we need to process the SST and depth data so that they can be combined. In
 
 ##### Extent
 
-In basic terms, the extent of the raster is the box around the geographic area it covers. It wouldn't be useful if the two maps covered completely separate areas. One of the easiest ways to fix mis-match extents is just to create a bounding box. A bounding box will make it so only the data within a certain geographical region will be used. For this I will take the dataset with the larger extent (depth) and crop it to match the extent of the other dataset(celsius_mean_sst). Normally this would mean the dataset with the smaller extent then becomes the bounding box.
+In basic terms, the raster's extent is the box around the geographic area it covers. It wouldn't be useful if the two maps covered completely separate areas. One of the easiest ways to fix mismatch extents is to create a bounding box. A bounding box will make it so only the data within a certain geographical region will be used. For this, I will take the dataset with the larger extent and crop it to match the extent of the other dataset.
 
 ```{r}
 # Crop the depth data to the mean_sst_celsius data
@@ -154,14 +139,10 @@ cropped_depth <- st_crop(depth, st_bbox(celsius_mean_sst))
 
 ##### Resolution
 
-**Talk about resolution**
-
-When working with maps resolution is basically how detailed the image is. Making sure the resolution between our maps is the same is important. If we don't pay attention to resolution we can get maps that look weird and are inaccurate. Its like photoshoping a very pixelated image onto a very clear image, it looks weird and we can tell its wrong.
-
-Like before we are going to try a function for this as well.
+When working with maps resolution is basically how detailed the image is. Making sure the resolution between our maps is the same is important. If we don't pay attention to resolution we can get maps that look weird and are inaccurate. It's like photoshopping a very pixelated image onto a very clear image, it looks weird and we can tell it's wrong. Because this project is about the Mega Function™, I am going to use a smaller function to check the resolutions.
 
 ```{r}
-# Function to determine if Resolutions match
+# Function to check if the resolutions (dimensions) of two spatial data objects match
 check_res_fun <- function(d1, d2) {
   if (identical(st_dimensions(d1), st_dimensions(d2))) {
     return(print("Resolutions match!"))
@@ -186,32 +167,26 @@ resampled_depth <- st_warp(cropped_depth, celsius_mean_sst, method = "near")
 check_res_fun(resampled_depth, celsius_mean_sst)
 ```
 
-So now the resolutions match.
+Now the resolutions match.
 
 ```{r}
+# Crop the 'resampled_depth' raster to the bounding box of the 'celsius_mean_sst' raster
 cropped_depth <- st_crop(resampled_depth, st_bbox(celsius_mean_sst))
 ```
 
-In the process of matching everything, I made several different variables representing the changes I make particularly to the depth variable. In order to avoid confusion, I am going to re-assign the names.
-
 ```{r}
-# Re-assign cropped_depth
+# Here I am re-assigning names to avoid confusion later on in the code
+# Re-assign variables
 depth_clean <- cropped_depth
 sst_clean <- celsius_mean_sst
 ```
 
-```{r}
-test_stack <- c(depth_clean, sst_clean)
-```
-
 #### CRS systems
 
-One of things I have learned is that mismatching CRSs is one of the things that will derail me the most when I am trying to work with geographical data sets. Lots of weird things can happen when coding and I think in projects like these about 90% of those things are caused by CRS troubles. If I were ever caught in the bad place, one of the signs would be mis-matched CRSs.
-
-In order to prevent these troubles, I will write a function that will tell me if data sets have mismatching CRSs
+One thing I have learned is that mismatching CRSs is one of the things that will derail me the most when I am trying to work with geographical data sets. Lots of weird things can happen when coding and I think in projects like these about 90% of those things are caused by CRS troubles. To prevent these troubles, I will write a function that will tell me if data sets have mismatching CRSs
 
 ```{r}
-# Function to determine if CRSs match
+# Function to check if the CRSs of two spatial data objects match
 check_crs_fun <- function(d1, d2) {
   if (identical(st_crs(d1), st_crs(d2))) {
     return(print("CRSs match!"))
@@ -223,20 +198,22 @@ check_crs_fun <- function(d1, d2) {
 
 Then we can check our data sets:
 
-```{r, message=FALSE, results='hide', warning=FALSE}
+```{r}
+# Use function to check is CRSs match
 check_crs_fun(depth_clean, sst_clean)
 check_crs_fun(depth_clean, wc_regions_clean)
 check_crs_fun(wc_regions_clean, sst_clean)
 ```
 
-Here I can see that two of my CRSs match.
+Here I can see that two of my CRSs do not match.
 
-Our next step will be to change the CRSs so they are consistent. We will do this by creating a function that will change the CRS of the first inputted dataset to match the crs of the second inputted dataset. I am going to change the CRSs of the `depth` and `wc_regions_clean` datasets to match the `sst_avg` datasets.
+The next step will be to change the CRSs so they are consistent. I will do this by creating a function that will change the CRS of the first inputted dataset to match the CRS of the second inputted dataset.
 
 ```{r}
+# Function to check if the CRS of two spatial data objects match and transform the first dataset's CRS if necessary
 change_crs_fun <- function(df1, df2) {
   if (identical(st_crs(df1), st_crs(df2))) {
-    print("no change")
+    print("No change needed")
     return(df1)
   } else {
     df1 <- st_transform(df1, st_crs(df2))
@@ -247,23 +224,20 @@ change_crs_fun <- function(df1, df2) {
 ```
 
 ```{r}
-# Change the CRSs to match and store in new varibles
+# Change the CRSs of depth_clean and wc_regions_clean to match sst_clean and store in new variables
 depth_clean <- change_crs_fun(depth_clean, sst_clean)
 wc_regions_clean <- change_crs_fun(wc_regions_clean, sst_clean)
 ```
 
 ```{r}
-# Check if the CRSs match now 
+# Check if the CRSs of depth_clean and wc_regions_clean match sst_clean
 check_crs_fun(depth_clean, sst_clean)
 check_crs_fun(wc_regions_clean, sst_clean)
 ```
 
-All of our CRSs should be the same now. By check st_crs(sst_avg2008), I can see that the CRS the sst_avg2008 uses is EPSG 9122. So I will now create a warning message that will tell me if there CRS is not 9122.
-
 ```{r}
-# Create crs warning function
+# Create CRS warning function to check if dataset CRS matches EPSG:9122
 crs_warning <- function(df) {
-  # Check if the CRS is different from EPSG:9122
   if (st_crs(df) != st_crs(sst_avg2008)) {
     warning("Warning: The CRS of the dataset is not EPSG:9122!")
   } else {
@@ -272,19 +246,17 @@ crs_warning <- function(df) {
 }
 ```
 
-Because we stacked the rasters, we want to ensure that the CRSs will still match what we had before, so we are going to run our CRS matching function again.
+All of our CRSs should be the same now.
 
-```{r}
-crs_warning(sst_avg_stack)
-```
+So far, I am three functions deep and counting.
 
-## Breaking Down The Process Of The Mega Function
+## Breaking Down the Process of the Mega Function™
 
-The end goal of this project is to have one single function that can be given the information about the depths a species can live in, the suitable temperature for the species, and the same of the species and produce a map of the west coast that shows which EEZ regions will be ideal for aquaculture of that species. Instead of trying to write the function all at once I will be doing each step in parts and putting them all together at the end. We will be using information about Oysters to begin with. They thrive at SSTs between 11°C - 30°C and depths 0-70 meters below sea level. 
+The goal of this project is to have one single function that can take information about the depths a species can live in, the suitable temperature range for the species, and the species name, and produce a map of the West Coast showing which EEZ regions are ideal for aquaculture of that species. Instead of trying to write the function all at once, I’ll be doing each step in parts and putting them all together at the end. I will be using information about Oysters to begin with, which thrive at SSTs between 11°C–30°C and depths of 0–70 meters below sea level.
 
-### Step 1. figuring out how to make the map only plot areas where the species can live.
+### Step 1. Figuring Out How to Make the Map Only Plot Areas Where the Species Can Live.
 
-My strategy here is to put in minimum and maximum values for the potential depths and temperatures, then I want to assign areas that are within the desired range 1 and the areas that aren't in the desired range 0s. I am going to do SST and depth individually then multiply them together. I think this will work because 1 \* 0 = 0 and 1 \* 1 = 1, so in the end I can just plot the areas with the ones and that will be where the habitat is.
+My strategy here is to input minimum and maximum values for potential depths and temperatures, then assign areas within the desired range a value of 1 and areas outside the range a value of 0. I’m going to handle SST and depth individually, then multiply the results together. Then I can just plot the areas with 1s to show where the habitat is.
 
 ```{r}
 # Reclassify Sea Surface Temperature (SST) to identify suitable areas based on temperature range
@@ -316,7 +288,7 @@ suitable_locations <- suitable_sst * suitable_depth
 plot(suitable_locations)
 ```
 
-Based on those not-polished at all preliminary plots, I feel confident that that method will work so now I will make a function that just plots suitable depths and SSTs. Adding a species name into the title of the plot isn't super difficult, so I will just throw that in there too. Then I will input suitable depth and SST for oysters, just for testing.
+Based on those not-polished at all preliminary plots, I feel confident that that method will work. Now I will make a function that plots suitable depths and SSTs. Adding a species name into the title of the plot isn't super difficult, so I will just throw that in there too. Then I will input suitable depth and SST for oysters.
 
 ```{r}
 # Define function to create a map based on depth and temperature ranges for a given species
@@ -378,17 +350,17 @@ first_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name
 first_map_fun(11, 30, -70, 0, "Oyster")
 ```
 
-It looks like it worked! It is a very ugly map, but it shows us that the function worked. We can see there are some areas, mostly along the lower part of the coast, that would be suitable for Oysters.
+It looks like it worked! It is a very ugly map, but it shows us the function functions. I can see there are some areas, mostly along the lower part of the coast, that would be suitable for Oysters.
 
-### Step 2. Finding Which Region has the most suitable habitat 
+### Step 2. Finding Which Region Has the Most Suitable Habitat
 
 I would like it to color each EEZ area by which area has the most amount of suitable area in it.
 
-My thought process for this is that since we have already turned the suitable depth and temperatures into 1s and 0s, the was we can find the region with the most suitable habitat is by summing up the number of 1s in each region, and the region with the most 1s will have the most suitable habitat. Here is what we need to do to accomplish this.
+Since I’ve already turned the suitable depth and temperature ranges into 1s and 0s, I think I can find the region with the most suitable habitat by summing the 1s in each region. The region with the highest number will have the most suitable habitat. Here’s what I need to do to accomplish this:
 
-1.  Figure out a way to filter the raster values to the specifc region
-2.  Add up all the ones in those regions
-3.  Make a heat map that shows the region with the highest value as having the most suitable habitat
+1.  Figure out how to filter the raster values to specific regions.
+2.  Add up all the 1s in each region.
+3.  Make a heat map showing the region with the highest value as having the most suitable habitat.
 
 ```{r}
 # Step 1: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster
@@ -404,11 +376,11 @@ region_sums <- st_extract(suitable_by_region, wc_regions_clean, fun = sum, na.rm
 plot(region_sums)
 ```
 
-Based on the plot, it looks like this will work. Because we are going to be using the same shapefile, I don't feel as much of a need to turn this into its own function for testing, so I will move to the next step.
+Based on the plot, it looks like this method will work. Since I’ll be using the same shapefile, I don’t feel the need to turn this into a separate function for testing, so I’ll move to the next step.
 
-# Step 3. Testing map aesthetics
+### Step 3. Testing Map Aesthetics
 
-Constantly re-running a function to test which map aesthetics I like would take a long time, so instead I am just going to make the map here, then input it into the final function.
+Constantly re-running a function to test map aesthetics would take a long time, so instead, I’m making the map here and will incorporate it into the final function later.
 
 ```{r}
 tm_shape(wc_regions_clean) +
@@ -437,13 +409,11 @@ tm_shape(wc_regions_clean) +
 
 I like the way this map looks, and I think any little issues can be fixed when we put the function together.
 
-## Creating the main function aka the
-
-# MEGA-FUNCTION
+## Creating the Mega Function!<span>&#8482;</span>
 
 ### Aka The functional finished function
 
-##### aka area_map_fun
+##### Aka area_map_fun
 
 ```{r}
 # Function to create a map showing suitable habitat for a species based on temperature and depth criteria
@@ -524,9 +494,9 @@ area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name)
 area_map_fun(11, 30, -70, 0, "Oyster")
 ```
 
-And thats the final function! 
+And thats the final function!
 
-No we can use it on any aquaculturely relevent species we want, so I will use it on the Manila Clam (*Ruditapes philippinarum*)! According to sealifebase.ca, Manilla clams prefer temperatures of 18°C - 35°C and depths of 0 - 100 meters. So I will put that info in my function and a graph will appear!
+Now we can use it for any aquaculture-relevant species, so I will use it on the Manila Clam (*Ruditapes philippinarum*)! According to sealifebase.ca, Manilla clams prefer temperatures of 18°C - 35°C and depths of 0 - 100 meters. So I will put that info in my function and a map will appear!
 
 ```{r}
 area_map_fun(18, 35, -100, 0, "Manilla Clam")
@@ -534,10 +504,9 @@ area_map_fun(18, 35, -100, 0, "Manilla Clam")
 
 **The map appeared!**
 
-We can see from this map that the region with the most suitable habitat is on the very southern part of the coast, which isn't surprising considering its preference for high temperatures. 
+We can see from the map that the region with the most suitable habitat is in the very southern part of the coast, which isn’t surprising given its preference for high temperatures.
 
-Hopefully after reading this you have some idea of how you might make a similar function yourself! Thanks for reading!
-
+Hopefully, after reading this, you have some idea of how to create a similar mega function yourself! Thanks for reading! 
 
 ## Citations
 
