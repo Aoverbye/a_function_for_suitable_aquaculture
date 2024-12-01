@@ -116,10 +116,6 @@ plot(sst_avg2008)
 
 ## find the mean SST from 2008-2012 (e.g. create single raster of average SST)
 
-## convert average SST from Kelvin to Celsius
-
-## hint: subtract by 273.15
-
 First we want to get the mean over all the years.
 
 ```{r}
@@ -282,120 +278,117 @@ Because we stacked the rasters, we want to ensure that the CRSs will still match
 crs_warning(sst_avg_stack)
 ```
 
-## Find suitable locations
+## Breaking Down The Process Of The Mega Function
+
+The end goal of this project is to have one single function that can be given the information about the depths a species can live in, the suitable temperature for the species, and the same of the species and produce a map of the west coast that shows which EEZ regions will be ideal for aquaculture of that species. Instead of trying to write the function all at once I will be doing each step in parts and putting them all together at the end. We will be using information about Oysters to begin with. They thrive at SSTs between 11°C - 30°C and depths 0-70 meters below sea level. 
+
+### Step 1. figuring out how to make the map only plot areas where the species can live.
+
+My strategy here is to put in minimum and maximum values for the potential depths and temperatures, then I want to assign areas that are within the desired range 1 and the areas that aren't in the desired range 0s. I am going to do SST and depth individually then multiply them together. I think this will work because 1 \* 0 = 0 and 1 \* 1 = 1, so in the end I can just plot the areas with the ones and that will be where the habitat is.
 
 ```{r}
-# Reclassify SST (keep logical 1/0 format)
-suitable_sst <- (celsius_mean_sst >= 8 & celsius_mean_sst <= 18)
+# Reclassify Sea Surface Temperature (SST) to identify suitable areas based on temperature range
+# Suitable SST range: 11°C to 30°C
+suitable_sst <- (sst_clean >= 11 & sst_clean <= 30)
 
-# Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
+# Convert logical values (TRUE/FALSE) to integers (1/0) to create a binary map of suitable areas
+# Preserve the 'stars' format while applying the conversion
 suitable_sst <- st_apply(suitable_sst, c("x", "y"), function(x) as.integer(x))
 
-```
-
-```{r}
+# Plot the reclassified SST map
 plot(suitable_sst)
-```
 
-```{r}
-# Reclassify Depth (keep logical 1/0 format)
-suitable_depth <- (depth_clean >= -24 & depth_clean <= 0)
+# Reclassify Depth to identify suitable areas based on depth range
+# Suitable Depth range: -24m to 0m (depths above sea level)
+suitable_depth <- (depth_clean >= -70 & depth_clean <= 0)
 
-# Convert logical values (TRUE/FALSE) to integers (1/0)
+# Convert logical values (TRUE/FALSE) to integers (1/0) to create a binary map of suitable areas
+# Preserve the 'stars' format while applying the conversion
 suitable_depth <- st_apply(suitable_depth, c("x", "y"), function(x) as.integer(x))
 
-```
-
-```{r}
+# Plot the reclassified Depth map
 plot(suitable_depth)
-```
 
-```{r}
+# Combine SST and Depth suitability maps by multiplying them
+# The result will be a binary map indicating areas that are suitable for both SST and Depth
 suitable_locations <- suitable_sst * suitable_depth
+
+plot(suitable_locations)
 ```
 
-# Creating A Central California Area For Funsies
-
-```{r, message=FALSE, results='hide', warning=FALSE}
-head(wc_regions_clean)
-
-central_california <- wc_regions_clean %>% 
-  filter(rgn == "Central California")  # Filter by the region name
-
-# Step 2: Get the bounding box of Central California
-central_california_bbox <- st_bbox(central_california)
-
-# Print the bounding box
-print(central_california_bbox)
-```
-
-## Creating the main function aka the
-
-# MEGA-FUNCTION
-
-
-# create a function that will map suitable areas
-
-First I am just going to make a function that will map an area based on temperature and depth that will include the name of the species in the title.
-
+Based on those not-polished at all preliminary plots, I feel confident that that method will work so now I will make a function that just plots suitable depths and SSTs. Adding a species name into the title of the plot isn't super difficult, so I will just throw that in there too. Then I will input suitable depth and SST for oysters, just for testing.
 
 ```{r}
-# Create function
-area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
- 
-# Reclassify Depth (keep logical 1/0 format)
-depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
-
-# Convert logical values (TRUE/FALSE) to integers (1/0)
-depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
-
-depth_range[is.na(depth_range)] <- 0
-
-## Reclassify SST (keep logical 1/0 format)
-sst_range <- (celsius_mean_sst >= min_temp & celsius_mean_sst <= max_temp)
-
-# Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
-sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
-
-sst_range[is.na(sst_range)] <- 0
-
-combo_range <- sst_range * depth_range
+# Define function to create a map based on depth and temperature ranges for a given species
+first_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
   
-combo_range[is.na(combo_range)] <- 0
-
-# Step 3: Convert suitable area to a stars object
-combo_range <- st_as_stars(combo_range)
-
-area_map <- tm_shape(central_california) +
-  tm_polygons() + 
-  tm_shape(combo_range) +
-  tm_raster() +
-  tm_shape(central_california) +
-  tm_borders() +
-  tm_layout(title = paste("Map of Depth and Temperature for", species_name))
-
-
-print(area_map)
-
+  # Step 1: Reclassify Depth (keep logical 1/0 format)
+  # Create a logical matrix where TRUE (1) represents areas within the depth range
+  depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
+  
+  # Step 2: Convert logical values (TRUE/FALSE) to integers (1/0)
+  # Apply the transformation to keep the 'stars' format
+  depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
+  
+  # Replace NA values in depth range with 0
+  depth_range[is.na(depth_range)] <- 0
+  
+  # Step 3: Reclassify Sea Surface Temperature (SST) (keep logical 1/0 format)
+  # Create a logical matrix where TRUE (1) represents areas within the temperature range
+  sst_range <- (sst_clean >= min_temp & sst_clean <= max_temp)
+  
+  # Convert logical values (TRUE/FALSE) to integers (1/0) and preserve the 'stars' format
+  sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
+  
+  # Replace NA values in SST range with 0
+  sst_range[is.na(sst_range)] <- 0
+  
+  # Step 4: Combine SST and Depth ranges to create a 'suitable' area map
+  # A value of 1 means both depth and temperature are suitable for the species
+  combo_range <- sst_range * depth_range
+  
+  # Replace NA values in the combined range with 0
+  combo_range[is.na(combo_range)] <- 0
+  
+  # Step 5: Convert the suitable area map to a 'stars' object for mapping
+  combo_range <- st_as_stars(combo_range)
+  
+  # Step 6: Create the map using 'tmap'
+  area_map <- tm_shape(wc_regions_clean) + 
+    tm_polygons() +  # Add region polygons
+    tm_shape(combo_range) + 
+    tm_raster() +   # Add the suitable area raster
+    tm_shape(wc_regions_clean) + 
+    tm_borders() +  # Add borders around regions
+    tm_layout(
+      title = paste("Map of Depth and Temperature for", species_name), # Title of the map
+      main.title.size = 1,  # Adjust title size
+      panel.show = FALSE,  # Hide the panel grid
+      frame = FALSE         # Hide the frame around the map
+    )
+  
+  # Step 7: Print the map
+  print(area_map)
 }
+
 ```
 
 ```{r}
 # Use function
-area_map_fun(-10, 100, -50, -20, "Pandas")
+first_map_fun(11, 30, -70, 0, "Oyster")
 ```
 
-I would like it to color each eez area by which area has the most amount of suitable area in it. 
+It looks like it worked! It is a very ugly map, but it shows us that the function worked. We can see there are some areas, mostly along the lower part of the coast, that would be suitable for Oysters.
 
-Because I made a variable that labeled all habitat within an area that is suitable as 1 and all that is not suitable as 0, I think I could do this by adding all the ones together, the area with the most ones would be the area with the most suitable habitat. So somehow I need to take the combo_range function, split it into the eez areas, and have it count which one has the highest value
+### Step 2. Finding Which Region has the most suitable habitat 
 
-### Finding the most amount of suitable habitat in each region
+I would like it to color each EEZ area by which area has the most amount of suitable area in it.
 
 My thought process for this is that since we have already turned the suitable depth and temperatures into 1s and 0s, the was we can find the region with the most suitable habitat is by summing up the number of 1s in each region, and the region with the most 1s will have the most suitable habitat. Here is what we need to do to accomplish this.
 
-1. figure out a way to filter the raster values to the specifc region
-2. add up all the ones in that area
-3. Make a heat map that shows the region with the highest value as having the most suitable habitat
+1.  Figure out a way to filter the raster values to the specifc region
+2.  Add up all the ones in those regions
+3.  Make a heat map that shows the region with the highest value as having the most suitable habitat
 
 ```{r}
 # Step 1: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster
@@ -407,77 +400,151 @@ suitable_by_region <- suitable_locations * region_raster
 # Step 3: Sum values within each region
 region_sums <- st_extract(suitable_by_region, wc_regions_clean, fun = sum, na.rm = TRUE)
 
-# Convert results to a data frame
-region_sums_df <- data.frame(region = wc_regions_clean$rgn, suitable_area_sum = region_sums)
-print(region_sums_df)
+# Step 4: Test plot
+plot(region_sums)
 ```
 
-## Determine the most suitable EEZ
-### The functionall finished function
+Based on the plot, it looks like this will work. Because we are going to be using the same shapefile, I don't feel as much of a need to turn this into its own function for testing, so I will move to the next step.
+
+# Step 3. Testing map aesthetics
+
+Constantly re-running a function to test which map aesthetics I like would take a long time, so instead I am just going to make the map here, then input it into the final function.
 
 ```{r}
-# Create function
+tm_shape(wc_regions_clean) +
+  tm_polygons() +  # Visualize the boundaries of the EEZ regions
+  tm_shape(region_sums) +
+  tm_fill(palette = "YlGnBu", title = "Suitable Habitat Area") +  # Add color representing habitat suitability
+  tm_borders() +  # Overlay region borders for clarity
+  tm_compass(position = c(0.64, 0.43), type = "8star", size = 3) +  # Add a compass to indicate direction
+  tm_scale_bar(position = c(0.58, 0.35)) +  # Include a scale bar for distance reference
+  tm_layout(
+    main.title = "Suitable Areas for Aquaculture Development",  # Set the map title
+    asp = 1, 
+    main.title.size = 1, 
+    panel.show = FALSE, 
+    frame = FALSE, 
+    inner.margins = c(0.1, 0.1, 0, 0.3), 
+    main.title.position = c("center", "top"), 
+    legend.position = c(0.58, 0.65)
+  ) +
+  tm_credits(
+    text = "Best-Suited EEZ Regions for Aquaculture Development Based On Depth and Temperature", 
+    position = c(0.1, 0.05), size = 1, align = "center"  # Display credits at the bottom
+  )
+
+```
+
+I like the way this map looks, and I think any little issues can be fixed when we put the function together.
+
+## Creating the main function aka the
+
+# MEGA-FUNCTION
+
+### Aka The functional finished function
+
+##### aka area_map_fun
+
+```{r}
+# Function to create a map showing suitable habitat for a species based on temperature and depth criteria
 area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
   
-  # Reclassify Depth (keep logical 1/0 format)
+  # Step 1: Reclassify Depth (logical 1/0 based on specified range)
+  # Create a logical raster (TRUE/FALSE) where depths are within the specified range
   depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
   
-  # Convert logical values (TRUE/FALSE) to integers (1/0)
+  # Convert logical values (TRUE/FALSE) to integers (1/0) using 'st_apply'
   depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
   
+  # Set any NA values to 0 (indicating unsuitable depth)
   depth_range[is.na(depth_range)] <- 0
   
-  ## Reclassify SST (keep logical 1/0 format)
-  sst_range <- (celsius_mean_sst >= min_temp & celsius_mean_sst <= max_temp)
+  # Step 2: Reclassify Sea Surface Temperature (SST) (logical 1/0 based on specified range)
+  # Create a logical raster (TRUE/FALSE) where SST is within the specified range
+  sst_range <- (sst_clean >= min_temp & sst_clean <= max_temp)
   
-  # Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format
+  # Convert logical values (TRUE/FALSE) to integers (1/0) and preserve stars format
   sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
   
+  # Set any NA values to 0 (indicating unsuitable temperature)
   sst_range[is.na(sst_range)] <- 0
   
+  # Step 3: Combine SST and Depth Ranges
+  # Create a combined suitability raster where both depth and SST conditions are met
   combo_range <- sst_range * depth_range
   
+  # Set any NA values in the combined raster to 0
   combo_range[is.na(combo_range)] <- 0
   
-  # Convert suitable area to a stars object
+  # Convert the suitable area into a 'stars' object
   combo_range <- st_as_stars(combo_range)
   
-  # Step 2: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster
+  # Step 4: Rasterize the region shapefile (wc_regions_clean) to match the suitable area raster
+  # Rasterize the region shapefile based on the "rgn" field, aligning it with the suitable area raster
   region_raster <- st_rasterize(wc_regions_clean, combo_range, field = "rgn", fun = "first")
   
-  # Step 3: Multiply suitable_locations raster by the region_raster
+  # Step 5: Multiply the suitable area raster by the region raster to isolate suitable regions
   suitable_test <- combo_range * region_raster
   
-  # Step 4: Sum values within each region
+  # Step 6: Calculate the sum of suitable areas within each region (sum of 1s)
   region_sums <- st_extract(suitable_test, wc_regions_clean, fun = sum, na.rm = TRUE)
   
-  # Create the heat map using the correct format (stars or raster)
+  # Step 7: Create the heatmap using the suitable region sums
   area_map <- tm_shape(wc_regions_clean) +
-    tm_polygons() +  # Draw the boundaries of regions
-    tm_shape(region_sums) +
-    tm_fill(palette = "YlGnBu", title = "Suitable Habitat Area") +  # Color by suitable habitat area
-    tm_borders() +  # Add borders to the regions
-    tm_layout(title = paste("Map of Depth and Temperature for", species_name))
+    tm_polygons() +  # Draw region boundaries
+    tm_shape(region_sums) +  # Add region sums (suitable habitat area)
+    tm_fill(palette = "YlGnBu", title = "Suitable Habitat Area") +  # Color the regions by suitable habitat area
+    tm_borders() +  # Add borders around the regions
+    tm_compass(position = c(0.64, 0.43), type = "8star", size = 3) +  # Add compass
+    tm_scale_bar(position = c(0.58, 0.35)) +  # Add scale bar
+    tm_layout(
+      main.title = paste("Suitable Areas for", species_name, "Aquaculture"), 
+      asp = 1,
+      main.title.size = 1,
+      panel.show = FALSE,
+      frame = FALSE,
+      inner.margins = c(0.1, 0.1, 0, 0.3),
+      main.title.position = c("center", "top"),
+      legend.position = c(0.58, 0.65)
+    ) + 
+    tm_credits(
+      text = paste("Best-Suited EEZ Regions for", species_name, 
+                   "Aquaculture Development\nBased On Water Depth and Average Surface Temperature"),
+      position = c(0.1, 0.01),  
+      size = 1,
+      align = "left"
+    )
   
-  # Print the map
+  # Step 8: Print the map
   print(area_map)
 }
 ```
 
 ```{r}
-# Use function
-area_map_fun(0, 10, -Inf, Inf, "Pandas")
+area_map_fun(11, 30, -70, 0, "Oyster")
 ```
 
+And thats the final function! 
 
+No we can use it on any aquaculturely relevent species we want, so I will use it on the Manila Clam (*Ruditapes philippinarum*)! According to sealifebase.ca, Manilla clams prefer temperatures of 18°C - 35°C and depths of 0 - 100 meters. So I will put that info in my function and a graph will appear!
+
+```{r}
+area_map_fun(18, 35, -100, 0, "Manilla Clam")
+```
+
+**The map appeared!**
+
+We can see from this map that the region with the most suitable habitat is on the very southern part of the coast, which isn't surprising considering its preference for high temperatures. 
+
+Hopefully after reading this you have some idea of how you might make a similar function yourself! Thanks for reading!
 
 
 ## Citations
-
-#### Data
 
 Flanders Marine Institute (VLIZ). (n.d.). *Exclusive Economic Zone (EEZ) boundaries*. Maritime Boundaries Database, version unknown. Retrieved from https://www.marineregions.org/eez.php (Accessed: November 29, 2024)
 
 General Bathymetric Chart of the Oceans (GEBCO) Compilation Group. (2022). *GEBCO_2022 Grid* \[Data set\]. https://doi.org/10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c (Accessed: November 29, 2024)
 
 National Oceanic and Atmospheric Administration (NOAA). (2018). *Daily Global 5km Satellite Sea Surface Temperature Anomaly (Version 3.1)*. NOAA Coral Reef Watch. Retrieved from https://coralreefwatch.noaa.gov/product/5km/index_5km_ssta.php (Accessed: November 29, 2024)
+
+SeaLifeBase. (n.d.). *Ruditapes philippinarum (Adams & Reeve, 1850): Japanese carpet shell*. Retrieved November 30, 2024, from https://www.sealifebase.ca/summary/Ruditapes-philippinarum.html

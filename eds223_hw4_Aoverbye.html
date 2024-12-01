@@ -95,25 +95,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#preliminary-data-exploration" id="toc-preliminary-data-exploration" class="nav-link" data-scroll-target="#preliminary-data-exploration">Preliminary Data Exploration</a></li>
   <li><a href="#processing-the-data" id="toc-processing-the-data" class="nav-link" data-scroll-target="#processing-the-data">Processing The data!</a></li>
   <li><a href="#find-the-mean-sst-from-2008-2012-e.g.-create-single-raster-of-average-sst" id="toc-find-the-mean-sst-from-2008-2012-e.g.-create-single-raster-of-average-sst" class="nav-link" data-scroll-target="#find-the-mean-sst-from-2008-2012-e.g.-create-single-raster-of-average-sst">find the mean SST from 2008-2012 (e.g.&nbsp;create single raster of average SST)</a></li>
-  <li><a href="#convert-average-sst-from-kelvin-to-celsius" id="toc-convert-average-sst-from-kelvin-to-celsius" class="nav-link" data-scroll-target="#convert-average-sst-from-kelvin-to-celsius">convert average SST from Kelvin to Celsius</a></li>
-  <li><a href="#hint-subtract-by-273.15" id="toc-hint-subtract-by-273.15" class="nav-link" data-scroll-target="#hint-subtract-by-273.15">hint: subtract by 273.15</a></li>
-  </ul></li>
-  <li><a href="#we-may-have-an-issue-later-and-it-may-have-to-do-with-warping" id="toc-we-may-have-an-issue-later-and-it-may-have-to-do-with-warping" class="nav-link" data-scroll-target="#we-may-have-an-issue-later-and-it-may-have-to-do-with-warping">WE MAY HAVE AN ISSUE LATER AND IT MAY HAVE TO DO WITH WARPING</a>
+  <li><a href="#breaking-down-and-making-the-mega-function-in-chunks" id="toc-breaking-down-and-making-the-mega-function-in-chunks" class="nav-link" data-scroll-target="#breaking-down-and-making-the-mega-function-in-chunks">Breaking Down And Making the Mega Function in Chunks</a>
   <ul class="collapse">
-  <li><a href="#find-suitable-locations" id="toc-find-suitable-locations" class="nav-link" data-scroll-target="#find-suitable-locations">Find suitable locations</a></li>
+  <li><a href="#step-1.-figuring-out-how-to-make-the-map-only-plot-areas-where-the-species-can-live." id="toc-step-1.-figuring-out-how-to-make-the-map-only-plot-areas-where-the-species-can-live." class="nav-link" data-scroll-target="#step-1.-figuring-out-how-to-make-the-map-only-plot-areas-where-the-species-can-live.">Step 1. figuring out how to make the map only plot areas where the species can live.</a></li>
+  <li><a href="#step-2.-finding-the-most-amount-of-suitable-habitat-in-each-region" id="toc-step-2.-finding-the-most-amount-of-suitable-habitat-in-each-region" class="nav-link" data-scroll-target="#step-2.-finding-the-most-amount-of-suitable-habitat-in-each-region">Step 2. Finding the most amount of suitable habitat in each region</a></li>
   </ul></li>
-  <li><a href="#messing-around" id="toc-messing-around" class="nav-link" data-scroll-target="#messing-around">Messing around</a>
+  </ul></li>
+  <li><a href="#step-3.-testing-map-aesthetics" id="toc-step-3.-testing-map-aesthetics" class="nav-link" data-scroll-target="#step-3.-testing-map-aesthetics">Step 3. Testing map aesthetics</a>
   <ul class="collapse">
   <li><a href="#creating-the-main-function-aka-the" id="toc-creating-the-main-function-aka-the" class="nav-link" data-scroll-target="#creating-the-main-function-aka-the">Creating the main function aka the</a></li>
   </ul></li>
-  <li><a href="#mega-function" id="toc-mega-function" class="nav-link" data-scroll-target="#mega-function">MEGA-FUNCTION</a></li>
-  <li><a href="#create-a-function-that-will-map-suitable-areas" id="toc-create-a-function-that-will-map-suitable-areas" class="nav-link" data-scroll-target="#create-a-function-that-will-map-suitable-areas">create a function that will map suitable areas</a>
+  <li><a href="#mega-function" id="toc-mega-function" class="nav-link" data-scroll-target="#mega-function">MEGA-FUNCTION</a>
   <ul class="collapse">
-  <li><a href="#finding-the-most-amount-of-suitable-habitat-in-each-region" id="toc-finding-the-most-amount-of-suitable-habitat-in-each-region" class="nav-link" data-scroll-target="#finding-the-most-amount-of-suitable-habitat-in-each-region">Finding the most amount of suitable habitat in each region</a></li>
-  </ul></li>
-  <li><a href="#test-can-delete-later" id="toc-test-can-delete-later" class="nav-link" data-scroll-target="#test-can-delete-later">Test can delete later</a>
-  <ul class="collapse">
-  <li><a href="#determine-the-most-suitable-eez" id="toc-determine-the-most-suitable-eez" class="nav-link" data-scroll-target="#determine-the-most-suitable-eez">Determine the most suitable EEZ</a></li>
+  <li><a href="#aka-the-functional-finished-function" id="toc-aka-the-functional-finished-function" class="nav-link" data-scroll-target="#aka-the-functional-finished-function">Aka The functional finished function</a></li>
   <li><a href="#citations" id="toc-citations" class="nav-link" data-scroll-target="#citations">Citations</a></li>
   </ul></li>
   </ul>
@@ -300,12 +294,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="find-the-mean-sst-from-2008-2012-e.g.-create-single-raster-of-average-sst" class="level2">
 <h2 class="anchored" data-anchor-id="find-the-mean-sst-from-2008-2012-e.g.-create-single-raster-of-average-sst">find the mean SST from 2008-2012 (e.g.&nbsp;create single raster of average SST)</h2>
-</section>
-<section id="convert-average-sst-from-kelvin-to-celsius" class="level2">
-<h2 class="anchored" data-anchor-id="convert-average-sst-from-kelvin-to-celsius">convert average SST from Kelvin to Celsius</h2>
-</section>
-<section id="hint-subtract-by-273.15" class="level2">
-<h2 class="anchored" data-anchor-id="hint-subtract-by-273.15">hint: subtract by 273.15</h2>
 <p>First we want to get the mean over all the years.</p>
 <div class="cell">
 <details class="code-fold">
@@ -339,10 +327,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>celsius_mean_sst <span class="ot">&lt;-</span> sst_mean <span class="sc">-</span> <span class="fl">273.15</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section>
-</section>
-<section id="we-may-have-an-issue-later-and-it-may-have-to-do-with-warping" class="level1">
-<h1>WE MAY HAVE AN ISSUE LATER AND IT MAY HAVE TO DO WITH WARPING</h1>
 <section id="cropping-rasters" class="level4">
 <h4 class="anchored" data-anchor-id="cropping-rasters">Cropping Rasters</h4>
 <p>Next, we need to process the SST and depth data so that they can be combined. In this case the SST and depth data have slightly different resolutions, extents, and positions.</p>
@@ -523,45 +507,167 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 </section>
-<section id="find-suitable-locations" class="level2">
-<h2 class="anchored" data-anchor-id="find-suitable-locations">Find suitable locations</h2>
+</section>
+<section id="breaking-down-and-making-the-mega-function-in-chunks" class="level2">
+<h2 class="anchored" data-anchor-id="breaking-down-and-making-the-mega-function-in-chunks">Breaking Down And Making the Mega Function in Chunks</h2>
+<p>The end goal of this project is to have one single function that can be given the information about the depths a species can live in, the suitable temperature for the species, and the same of the species and produce a map of the west coast that shows which EEZ regions will be ideal for aquaculture of that species. Instead of trying to write the function all at once I will be doing each step in parts and putting them all together at the end. We will be using information about Oysters to begin with. They thrive at SSTs between 11°C - 30°C and depths 0-70 meters below sea level.</p>
+<section id="step-1.-figuring-out-how-to-make-the-map-only-plot-areas-where-the-species-can-live." class="level3">
+<h3 class="anchored" data-anchor-id="step-1.-figuring-out-how-to-make-the-map-only-plot-areas-where-the-species-can-live.">Step 1. figuring out how to make the map only plot areas where the species can live.</h3>
+<p>My strategy here is to put in minimum and maximum values for the potential depths and temperatures, then I want to assign areas that are within the desired range 1 and the areas that aren’t in the desired range 0s. I am going to do SST and depth individually then multiply them together. I think this will work because 1 * 0 = 0 and 1 * 1 = 1, so in the end I can just plot the areas with the ones and that will be where the habitat is.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify SST (keep logical 1/0 format)</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>suitable_sst <span class="ot">&lt;-</span> (celsius_mean_sst <span class="sc">&gt;=</span> <span class="dv">8</span> <span class="sc">&amp;</span> celsius_mean_sst <span class="sc">&lt;=</span> <span class="dv">18</span>)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>suitable_sst <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(suitable_sst, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(suitable_sst)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify Sea Surface Temperature (SST) to identify suitable areas based on temperature range</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Suitable SST range: 11°C to 30°C</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>suitable_sst <span class="ot">&lt;-</span> (sst_clean <span class="sc">&gt;=</span> <span class="dv">11</span> <span class="sc">&amp;</span> sst_clean <span class="sc">&lt;=</span> <span class="dv">30</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0) to create a binary map of suitable areas</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Preserve the 'stars' format while applying the conversion</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>suitable_sst <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(suitable_sst, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the reclassified SST map</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(suitable_sst)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify Depth to identify suitable areas based on depth range</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Suitable Depth range: -24m to 0m (depths above sea level)</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>suitable_depth <span class="ot">&lt;-</span> (depth_clean <span class="sc">&gt;=</span> <span class="sc">-</span><span class="dv">70</span> <span class="sc">&amp;</span> depth_clean <span class="sc">&lt;=</span> <span class="dv">0</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0) to create a binary map of suitable areas</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Preserve the 'stars' format while applying the conversion</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>suitable_depth <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(suitable_depth, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the reclassified Depth map</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(suitable_depth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine SST and Depth suitability maps by multiplying them</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The result will be a binary map indicating areas that are suitable for both SST and Depth</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>suitable_locations <span class="ot">&lt;-</span> suitable_sst <span class="sc">*</span> suitable_depth</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(suitable_locations)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-26-3.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>Based on those not-polished at all preliminary plots, I feel confident that that method will work so now I will make a function that just plots suitable depths and SSTs. Adding a species name into the title of the plot isn’t super difficult, so I will just throw that in there too.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify Depth (keep logical 1/0 format)</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>suitable_depth <span class="ot">&lt;-</span> (depth_clean <span class="sc">&gt;=</span> <span class="sc">-</span><span class="dv">24</span> <span class="sc">&amp;</span> depth_clean <span class="sc">&lt;=</span> <span class="dv">0</span>)</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0)</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>suitable_depth <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(suitable_depth, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define function to create a map based on depth and temperature ranges for a given species</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>first_map_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(min_temp, max_temp, min_depth, max_depth, species_name) {</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 1: Reclassify Depth (keep logical 1/0 format)</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a logical matrix where TRUE (1) represents areas within the depth range</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  depth_range <span class="ot">&lt;-</span> (depth_clean <span class="sc">&gt;=</span> min_depth <span class="sc">&amp;</span> depth_clean <span class="sc">&lt;=</span> max_depth)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2: Convert logical values (TRUE/FALSE) to integers (1/0)</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Apply the transformation to keep the 'stars' format</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  depth_range <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(depth_range, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace NA values in depth range with 0</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  depth_range[<span class="fu">is.na</span>(depth_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 3: Reclassify Sea Surface Temperature (SST) (keep logical 1/0 format)</span></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a logical matrix where TRUE (1) represents areas within the temperature range</span></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>  sst_range <span class="ot">&lt;-</span> (sst_clean <span class="sc">&gt;=</span> min_temp <span class="sc">&amp;</span> sst_clean <span class="sc">&lt;=</span> max_temp)</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0) and preserve the 'stars' format</span></span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>  sst_range <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(sst_range, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace NA values in SST range with 0</span></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>  sst_range[<span class="fu">is.na</span>(sst_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 4: Combine SST and Depth ranges to create a 'suitable' area map</span></span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># A value of 1 means both depth and temperature are suitable for the species</span></span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>  combo_range <span class="ot">&lt;-</span> sst_range <span class="sc">*</span> depth_range</span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace NA values in the combined range with 0</span></span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>  combo_range[<span class="fu">is.na</span>(combo_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 5: Convert the suitable area map to a 'stars' object for mapping</span></span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>  combo_range <span class="ot">&lt;-</span> <span class="fu">st_as_stars</span>(combo_range)</span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 6: Create the map using 'tmap'</span></span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a>  area_map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(wc_regions_clean) <span class="sc">+</span> </span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_polygons</span>() <span class="sc">+</span>  <span class="co"># Add region polygons</span></span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_shape</span>(combo_range) <span class="sc">+</span> </span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_raster</span>() <span class="sc">+</span>   <span class="co"># Add the suitable area raster</span></span>
+<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_shape</span>(wc_regions_clean) <span class="sc">+</span> </span>
+<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_borders</span>() <span class="sc">+</span>  <span class="co"># Add borders around regions</span></span>
+<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_layout</span>(</span>
+<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Map of Depth and Temperature for"</span>, species_name), <span class="co"># Title of the map</span></span>
+<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">main.title.size =</span> <span class="dv">1</span>,  <span class="co"># Adjust title size</span></span>
+<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.show =</span> <span class="cn">FALSE</span>,  <span class="co"># Hide the panel grid</span></span>
+<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a>      <span class="at">frame =</span> <span class="cn">FALSE</span>         <span class="co"># Hide the frame around the map</span></span>
+<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 7: Print the map</span></span>
+<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(area_map)</span>
+<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<p>Then we will input suitable depth and SST for oysters, just for testing.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(suitable_depth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use function</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">first_map_fun</span>(<span class="dv">11</span>, <span class="dv">30</span>, <span class="sc">-</span><span class="dv">70</span>, <span class="dv">0</span>, <span class="st">"Oyster"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>It looks like it worked! It is a very ugly map, but it shows us that the function worked. We can see there are some areas mostly along the lower part of the coast that would be suitable for Oysters.</p>
+</section>
+<section id="step-2.-finding-the-most-amount-of-suitable-habitat-in-each-region" class="level3">
+<h3 class="anchored" data-anchor-id="step-2.-finding-the-most-amount-of-suitable-habitat-in-each-region">Step 2. Finding the most amount of suitable habitat in each region</h3>
+<p>I would like it to color each eez area by which area has the most amount of suitable area in it.</p>
+<p>My thought process for this is that since we have already turned the suitable depth and temperatures into 1s and 0s, the was we can find the region with the most suitable habitat is by summing up the number of 1s in each region, and the region with the most 1s will have the most suitable habitat. Here is what we need to do to accomplish this.</p>
+<ol type="1">
+<li>Figure out a way to filter the raster values to the specifc region</li>
+<li>Add up all the ones in those regions</li>
+<li>Make a heat map that shows the region with the highest value as having the most suitable habitat</li>
+</ol>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>region_raster <span class="ot">&lt;-</span> <span class="fu">st_rasterize</span>(wc_regions_clean, suitable_locations, <span class="at">field =</span> <span class="st">"rgn"</span>, <span class="at">fun =</span> <span class="st">"first"</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Multiply suitable_locations raster by the region_raster</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>suitable_by_region <span class="ot">&lt;-</span> suitable_locations <span class="sc">*</span> region_raster</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Sum values within each region</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>region_sums <span class="ot">&lt;-</span> <span class="fu">st_extract</span>(suitable_by_region, wc_regions_clean, <span class="at">fun =</span> sum, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Test plot</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(region_sums)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -571,269 +677,172 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>suitable_locations <span class="ot">&lt;-</span> suitable_sst <span class="sc">*</span> suitable_depth</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
+<p>Based on the plot, it looks like this will work. Because we are going to be using the same shapefile, I don’t feel as much of a need to turn this into its own function for testing, so I will move to the next step.</p>
 </section>
 </section>
-<section id="messing-around" class="level1">
-<h1>Messing around</h1>
+</section>
+<section id="step-3.-testing-map-aesthetics" class="level1">
+<h1>Step 3. Testing map aesthetics</h1>
+<p>Constantly re-running a function to test which map aesthetics I like would take a long time, so instead I am just going to make the map here, then input it into the final function.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(wc_regions_clean)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>central_california <span class="ot">&lt;-</span> wc_regions_clean <span class="sc">%&gt;%</span> </span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(rgn <span class="sc">==</span> <span class="st">"Central California"</span>)  <span class="co"># Filter by the region name</span></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Get the bounding box of Central California</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>central_california_bbox <span class="ot">&lt;-</span> <span class="fu">st_bbox</span>(central_california)</span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the bounding box</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(central_california_bbox)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(wc_regions_clean) <span class="sc">+</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span>  <span class="co"># Visualize the boundaries of the EEZ regions</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(region_sums) <span class="sc">+</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">palette =</span> <span class="st">"YlGnBu"</span>, <span class="at">title =</span> <span class="st">"Suitable Habitat Area"</span>) <span class="sc">+</span>  <span class="co"># Add color representing habitat suitability</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span>  <span class="co"># Overlay region borders for clarity</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_compass</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="fl">0.64</span>, <span class="fl">0.43</span>), <span class="at">type =</span> <span class="st">"8star"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span>  <span class="co"># Add a compass to indicate direction</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_scale_bar</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="fl">0.58</span>, <span class="fl">0.35</span>)) <span class="sc">+</span>  <span class="co"># Include a scale bar for distance reference</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">main.title =</span> <span class="st">"Suitable Areas for Aquaculture Development"</span>,  <span class="co"># Set the map title</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">1</span>, </span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">main.title.size =</span> <span class="dv">1</span>, </span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.show =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">frame =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">inner.margins =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="dv">0</span>, <span class="fl">0.3</span>), </span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">main.title.position =</span> <span class="fu">c</span>(<span class="st">"center"</span>, <span class="st">"top"</span>), </span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.58</span>, <span class="fl">0.65</span>)</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_credits</span>(</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="st">"Best-Suited EEZ Regions for Aquaculture Development Based On Depth and Temperature"</span>, </span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">align =</span> <span class="st">"center"</span>  <span class="co"># Display credits at the bottom</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  </span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check for NA values</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co"># summary(suitable_locations)</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="co"># # Remove NA values if necessary</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co"># suitable_locations_clean &lt;- suitable_locations</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co"># suitable_locations_clean[is.na(suitable_locations_clean)] &lt;- 0  # or any other value you prefer</span></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co"># locations &lt;- st_as_stars(suitable_locations_clean)</span></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="co"># # Now plot</span></span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="co"># tm_shape(central_california) +</span></span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   tm_polygons() +  # Add borders to the bounding box</span></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   tm_shape(locations) +</span></span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   tm_raster() +</span></span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   tm_shape(central_california) +</span></span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   tm_borders()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co">#suitable_locations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tm_shape(central_california) +</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tm_polygons() +</span></span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co"># tm_shape(sst_mean) +</span></span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="co"># tm_raster() </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select a single attribute using dplyr::select</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>sst_mean <span class="ot">&lt;-</span> sst_mean <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"average_annual_sst_2008.tif"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
+<p>I like the way this map looks, and I think any little issues can be fixed when we put the function together.</p>
 <section id="creating-the-main-function-aka-the" class="level2">
 <h2 class="anchored" data-anchor-id="creating-the-main-function-aka-the">Creating the main function aka the</h2>
 </section>
 </section>
 <section id="mega-function" class="level1">
 <h1>MEGA-FUNCTION</h1>
-</section>
-<section id="create-a-function-that-will-map-suitable-areas" class="level1">
-<h1>create a function that will map suitable areas</h1>
-<p>First I am just going to make a function that will map an area based on temperature and depth that will include the name of the species in the title.</p>
+<section id="aka-the-functional-finished-function" class="level3">
+<h3 class="anchored" data-anchor-id="aka-the-functional-finished-function">Aka The functional finished function</h3>
+<section id="aka-area_map_fun" class="level5">
+<h5 class="anchored" data-anchor-id="aka-area_map_fun">aka area_map_fun</h5>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>area_map_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(min_temp, max_temp, min_depth, max_depth, species_name) {</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclassify Depth (keep logical 1/0 format)</span></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>depth_range <span class="ot">&lt;-</span> (depth_clean <span class="sc">&gt;=</span> min_depth <span class="sc">&amp;</span> depth_clean <span class="sc">&lt;=</span> max_depth)</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0)</span></span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>depth_range <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(depth_range, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>depth_range[<span class="fu">is.na</span>(depth_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Reclassify SST (keep logical 1/0 format)</span></span>
-<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>sst_range <span class="ot">&lt;-</span> (celsius_mean_sst <span class="sc">&gt;=</span> min_temp <span class="sc">&amp;</span> celsius_mean_sst <span class="sc">&lt;=</span> max_temp)</span>
-<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format</span></span>
-<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>sst_range <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(sst_range, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
-<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>sst_range[<span class="fu">is.na</span>(sst_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>combo_range <span class="ot">&lt;-</span> sst_range <span class="sc">*</span> depth_range</span>
-<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>combo_range[<span class="fu">is.na</span>(combo_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Convert suitable area to a stars object</span></span>
-<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>combo_range <span class="ot">&lt;-</span> <span class="fu">st_as_stars</span>(combo_range)</span>
-<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a>area_map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(central_california) <span class="sc">+</span></span>
-<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span> </span>
-<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(combo_range) <span class="sc">+</span></span>
-<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_raster</span>() <span class="sc">+</span></span>
-<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(central_california) <span class="sc">+</span></span>
-<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span></span>
-<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Map of Depth and Temperature for"</span>, species_name))</span>
-<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-35"><a href="#cb44-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(area_map)</span>
-<span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to create a map showing suitable habitat for a species based on temperature and depth criteria</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>area_map_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(min_temp, max_temp, min_depth, max_depth, species_name) {</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 1: Reclassify Depth (logical 1/0 based on specified range)</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a logical raster (TRUE/FALSE) where depths are within the specified range</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  depth_range <span class="ot">&lt;-</span> (depth_clean <span class="sc">&gt;=</span> min_depth <span class="sc">&amp;</span> depth_clean <span class="sc">&lt;=</span> max_depth)</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0) using 'st_apply'</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  depth_range <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(depth_range, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set any NA values to 0 (indicating unsuitable depth)</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>  depth_range[<span class="fu">is.na</span>(depth_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2: Reclassify Sea Surface Temperature (SST) (logical 1/0 based on specified range)</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a logical raster (TRUE/FALSE) where SST is within the specified range</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>  sst_range <span class="ot">&lt;-</span> (sst_clean <span class="sc">&gt;=</span> min_temp <span class="sc">&amp;</span> sst_clean <span class="sc">&lt;=</span> max_temp)</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0) and preserve stars format</span></span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>  sst_range <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(sst_range, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set any NA values to 0 (indicating unsuitable temperature)</span></span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>  sst_range[<span class="fu">is.na</span>(sst_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 3: Combine SST and Depth Ranges</span></span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a combined suitability raster where both depth and SST conditions are met</span></span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true" tabindex="-1"></a>  combo_range <span class="ot">&lt;-</span> sst_range <span class="sc">*</span> depth_range</span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set any NA values in the combined raster to 0</span></span>
+<span id="cb41-29"><a href="#cb41-29" aria-hidden="true" tabindex="-1"></a>  combo_range[<span class="fu">is.na</span>(combo_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb41-30"><a href="#cb41-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-31"><a href="#cb41-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert the suitable area into a 'stars' object</span></span>
+<span id="cb41-32"><a href="#cb41-32" aria-hidden="true" tabindex="-1"></a>  combo_range <span class="ot">&lt;-</span> <span class="fu">st_as_stars</span>(combo_range)</span>
+<span id="cb41-33"><a href="#cb41-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-34"><a href="#cb41-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 4: Rasterize the region shapefile (wc_regions_clean) to match the suitable area raster</span></span>
+<span id="cb41-35"><a href="#cb41-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rasterize the region shapefile based on the "rgn" field, aligning it with the suitable area raster</span></span>
+<span id="cb41-36"><a href="#cb41-36" aria-hidden="true" tabindex="-1"></a>  region_raster <span class="ot">&lt;-</span> <span class="fu">st_rasterize</span>(wc_regions_clean, combo_range, <span class="at">field =</span> <span class="st">"rgn"</span>, <span class="at">fun =</span> <span class="st">"first"</span>)</span>
+<span id="cb41-37"><a href="#cb41-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-38"><a href="#cb41-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 5: Multiply the suitable area raster by the region raster to isolate suitable regions</span></span>
+<span id="cb41-39"><a href="#cb41-39" aria-hidden="true" tabindex="-1"></a>  suitable_test <span class="ot">&lt;-</span> combo_range <span class="sc">*</span> region_raster</span>
+<span id="cb41-40"><a href="#cb41-40" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-41"><a href="#cb41-41" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 6: Calculate the sum of suitable areas within each region (sum of 1s)</span></span>
+<span id="cb41-42"><a href="#cb41-42" aria-hidden="true" tabindex="-1"></a>  region_sums <span class="ot">&lt;-</span> <span class="fu">st_extract</span>(suitable_test, wc_regions_clean, <span class="at">fun =</span> sum, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-43"><a href="#cb41-43" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-44"><a href="#cb41-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 7: Create the heatmap using the suitable region sums</span></span>
+<span id="cb41-45"><a href="#cb41-45" aria-hidden="true" tabindex="-1"></a>  area_map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(wc_regions_clean) <span class="sc">+</span></span>
+<span id="cb41-46"><a href="#cb41-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_polygons</span>() <span class="sc">+</span>  <span class="co"># Draw region boundaries</span></span>
+<span id="cb41-47"><a href="#cb41-47" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_shape</span>(region_sums) <span class="sc">+</span>  <span class="co"># Add region sums (suitable habitat area)</span></span>
+<span id="cb41-48"><a href="#cb41-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_fill</span>(<span class="at">palette =</span> <span class="st">"YlGnBu"</span>, <span class="at">title =</span> <span class="st">"Suitable Habitat Area"</span>) <span class="sc">+</span>  <span class="co"># Color the regions by suitable habitat area</span></span>
+<span id="cb41-49"><a href="#cb41-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_borders</span>() <span class="sc">+</span>  <span class="co"># Add borders around the regions</span></span>
+<span id="cb41-50"><a href="#cb41-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_compass</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="fl">0.64</span>, <span class="fl">0.43</span>), <span class="at">type =</span> <span class="st">"8star"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span>  <span class="co"># Add compass</span></span>
+<span id="cb41-51"><a href="#cb41-51" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_scale_bar</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="fl">0.58</span>, <span class="fl">0.35</span>)) <span class="sc">+</span>  <span class="co"># Add scale bar</span></span>
+<span id="cb41-52"><a href="#cb41-52" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_layout</span>(</span>
+<span id="cb41-53"><a href="#cb41-53" aria-hidden="true" tabindex="-1"></a>      <span class="at">main.title =</span> <span class="fu">paste</span>(<span class="st">"Suitable Areas for"</span>, species_name, <span class="st">"Aquaculture"</span>), </span>
+<span id="cb41-54"><a href="#cb41-54" aria-hidden="true" tabindex="-1"></a>      <span class="at">asp =</span> <span class="dv">1</span>,</span>
+<span id="cb41-55"><a href="#cb41-55" aria-hidden="true" tabindex="-1"></a>      <span class="at">main.title.size =</span> <span class="dv">1</span>,</span>
+<span id="cb41-56"><a href="#cb41-56" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.show =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb41-57"><a href="#cb41-57" aria-hidden="true" tabindex="-1"></a>      <span class="at">frame =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb41-58"><a href="#cb41-58" aria-hidden="true" tabindex="-1"></a>      <span class="at">inner.margins =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="dv">0</span>, <span class="fl">0.3</span>),</span>
+<span id="cb41-59"><a href="#cb41-59" aria-hidden="true" tabindex="-1"></a>      <span class="at">main.title.position =</span> <span class="fu">c</span>(<span class="st">"center"</span>, <span class="st">"top"</span>),</span>
+<span id="cb41-60"><a href="#cb41-60" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.58</span>, <span class="fl">0.65</span>)</span>
+<span id="cb41-61"><a href="#cb41-61" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span> </span>
+<span id="cb41-62"><a href="#cb41-62" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_credits</span>(</span>
+<span id="cb41-63"><a href="#cb41-63" aria-hidden="true" tabindex="-1"></a>      <span class="at">text =</span> <span class="fu">paste</span>(<span class="st">"Best-Suited EEZ Regions for"</span>, species_name, </span>
+<span id="cb41-64"><a href="#cb41-64" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"Aquaculture Development</span><span class="sc">\n</span><span class="st">Based On Water Depth and Average Surface Temperature"</span>),</span>
+<span id="cb41-65"><a href="#cb41-65" aria-hidden="true" tabindex="-1"></a>      <span class="at">position =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.01</span>),  </span>
+<span id="cb41-66"><a href="#cb41-66" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">1</span>,</span>
+<span id="cb41-67"><a href="#cb41-67" aria-hidden="true" tabindex="-1"></a>      <span class="at">align =</span> <span class="st">"left"</span></span>
+<span id="cb41-68"><a href="#cb41-68" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb41-69"><a href="#cb41-69" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-70"><a href="#cb41-70" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 8: Print the map</span></span>
+<span id="cb41-71"><a href="#cb41-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(area_map)</span>
+<span id="cb41-72"><a href="#cb41-72" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use function</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">area_map_fun</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">100</span>, <span class="sc">-</span><span class="dv">50</span>, <span class="sc">-</span><span class="dv">20</span>, <span class="st">"Pandas"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>I would like it to color each eez area by which area has the most amount of suitable area in it.</p>
-<p>Because I made a variable that labeled all habitat within an area that is suitable as 1 and all that is not suitable as 0, I think I could do this by adding all the ones together, the area with the most ones would be the area with the most suitable habitat. So somehow I need to take the combo_range function, split it into the eez areas, and have it count which one has the highest value</p>
-<section id="finding-the-most-amount-of-suitable-habitat-in-each-region" class="level3">
-<h3 class="anchored" data-anchor-id="finding-the-most-amount-of-suitable-habitat-in-each-region">Finding the most amount of suitable habitat in each region</h3>
-<p>My thought process for this is that since we have already turned the suitable depth and temperatures into 1s and 0s, the was we can find the region with the most suitable habitat is by summing up the number of 1s in each region, and the region with the most 1s will have the most suitable habitat. Here is what we need to do to accomplish this.</p>
-<ol type="1">
-<li>figure out a way to filter the raster values to the specifc region</li>
-<li>add up all the ones in that area</li>
-<li>Make a heat map that shows the region with the highest value as having the most suitable habitat</li>
-</ol>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>region_raster <span class="ot">&lt;-</span> <span class="fu">st_rasterize</span>(wc_regions_clean, suitable_locations, <span class="at">field =</span> <span class="st">"rgn"</span>, <span class="at">fun =</span> <span class="st">"first"</span>)</span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Multiply suitable_locations raster by the region_raster</span></span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>suitable_by_region <span class="ot">&lt;-</span> suitable_locations <span class="sc">*</span> region_raster</span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Sum values within each region</span></span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>region_sums <span class="ot">&lt;-</span> <span class="fu">st_extract</span>(suitable_by_region, wc_regions_clean, <span class="at">fun =</span> sum, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert results to a data frame</span></span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>region_sums_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">region =</span> wc_regions_clean<span class="sc">$</span>rgn, <span class="at">suitable_area_sum =</span> region_sums)</span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(region_sums_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>               region     suitable_area_sum.geometry
-1              Oregon MULTIPOLYGON (((-123.4318 4...
-2 Northern California MULTIPOLYGON (((-124.2102 4...
-3  Central California MULTIPOLYGON (((-122.9928 3...
-4 Southern California MULTIPOLYGON (((-120.6505 3...
-5          Washington MULTIPOLYGON (((-122.7675 4...
-  suitable_area_sum.average_annual_sst_2008.tif suitable_area_sum.NA.
-1                                     882779368           0.004904491
-2                                     557327418           0.006781013
-3                                    1114616741           0.016493428
-4                                     958861406           0.018541193
-5                                    2657810927           0.198645598
-  suitable_area_sum.NA..1
-1                882.7793
-2                557.3274
-3               1114.6167
-4                958.8614
-5               2657.8111</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="test-can-delete-later" class="level1">
-<h1>Test can delete later</h1>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>area_map_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(min_temp, max_temp, min_depth, max_depth, species_name) {</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reclassify Depth (keep logical 1/0 format)</span></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  depth_range <span class="ot">&lt;-</span> (depth_clean <span class="sc">&gt;=</span> min_depth <span class="sc">&amp;</span> depth_clean <span class="sc">&lt;=</span> max_depth)</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert logical values (TRUE/FALSE) to integers (1/0)</span></span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  depth_range <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(depth_range, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>  depth_range[<span class="fu">is.na</span>(depth_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>  <span class="do">## Reclassify SST (keep logical 1/0 format)</span></span>
-<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>  sst_range <span class="ot">&lt;-</span> (celsius_mean_sst <span class="sc">&gt;=</span> min_temp <span class="sc">&amp;</span> celsius_mean_sst <span class="sc">&lt;=</span> max_temp)</span>
-<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert the logical values (TRUE/FALSE) to integers (1/0) and preserve the stars format</span></span>
-<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>  sst_range <span class="ot">&lt;-</span> <span class="fu">st_apply</span>(sst_range, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="cf">function</span>(x) <span class="fu">as.integer</span>(x))</span>
-<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>  sst_range[<span class="fu">is.na</span>(sst_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>  combo_range <span class="ot">&lt;-</span> sst_range <span class="sc">*</span> depth_range</span>
-<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>  combo_range[<span class="fu">is.na</span>(combo_range)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert suitable area to a stars object</span></span>
-<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>  combo_range <span class="ot">&lt;-</span> <span class="fu">st_as_stars</span>(combo_range)</span>
-<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-27"><a href="#cb48-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster</span></span>
-<span id="cb48-28"><a href="#cb48-28" aria-hidden="true" tabindex="-1"></a>  region_raster <span class="ot">&lt;-</span> <span class="fu">st_rasterize</span>(wc_regions_clean, combo_range, <span class="at">field =</span> <span class="st">"rgn"</span>, <span class="at">fun =</span> <span class="st">"first"</span>)</span>
-<span id="cb48-29"><a href="#cb48-29" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-30"><a href="#cb48-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 3: Multiply suitable_locations raster by the region_raster</span></span>
-<span id="cb48-31"><a href="#cb48-31" aria-hidden="true" tabindex="-1"></a>  suitable_test <span class="ot">&lt;-</span> combo_range <span class="sc">*</span> region_raster</span>
-<span id="cb48-32"><a href="#cb48-32" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-33"><a href="#cb48-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 4: Sum values within each region</span></span>
-<span id="cb48-34"><a href="#cb48-34" aria-hidden="true" tabindex="-1"></a>  region_sums <span class="ot">&lt;-</span> <span class="fu">st_extract</span>(suitable_test, wc_regions_clean, <span class="at">fun =</span> sum, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb48-35"><a href="#cb48-35" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-36"><a href="#cb48-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create the heat map using the correct format (stars or raster)</span></span>
-<span id="cb48-37"><a href="#cb48-37" aria-hidden="true" tabindex="-1"></a>  area_map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(wc_regions_clean) <span class="sc">+</span></span>
-<span id="cb48-38"><a href="#cb48-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_polygons</span>() <span class="sc">+</span>  <span class="co"># Draw the boundaries of regions</span></span>
-<span id="cb48-39"><a href="#cb48-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_shape</span>(region_sums) <span class="sc">+</span></span>
-<span id="cb48-40"><a href="#cb48-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_fill</span>(<span class="at">palette =</span> <span class="st">"YlGnBu"</span>, <span class="at">title =</span> <span class="st">"Suitable Habitat Area"</span>) <span class="sc">+</span>  <span class="co"># Color by suitable habitat area</span></span>
-<span id="cb48-41"><a href="#cb48-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_borders</span>() <span class="sc">+</span>  <span class="co"># Add borders to the regions</span></span>
-<span id="cb48-42"><a href="#cb48-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_layout</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Map of Depth and Temperature for"</span>, species_name))</span>
-<span id="cb48-43"><a href="#cb48-43" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb48-44"><a href="#cb48-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Print the map</span></span>
-<span id="cb48-45"><a href="#cb48-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(area_map)</span>
-<span id="cb48-46"><a href="#cb48-46" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use function</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">area_map_fun</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="sc">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>, <span class="st">"Pandas"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">area_map_fun</span>(<span class="dv">11</span>, <span class="dv">30</span>, <span class="sc">-</span><span class="dv">70</span>, <span class="dv">0</span>, <span class="st">"Oyster"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<section id="determine-the-most-suitable-eez" class="level2">
-<h2 class="anchored" data-anchor-id="determine-the-most-suitable-eez">Determine the most suitable EEZ</h2>
+<p>And thats the final function!</p>
+<p>No we can use it on any aquaculturely relevent species we want, so I will use it on the Manila Clam (<em>Ruditapes philippinarum</em>)! According to sealifebase.ca, Manilla clams prefer temperatures of 18°C - 35°C and depths of 0 - 100 meters. So I will put that info in my function and a graph will appear!</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">area_map_fun</span>(<span class="dv">18</span>, <span class="dv">35</span>, <span class="sc">-</span><span class="dv">100</span>, <span class="dv">0</span>, <span class="st">"Manilla Clam"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eds223_hw4_Aoverbye_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can see from this map that the region with the most suitable habitat is on the very southern part of the coast, which isn’t surprising considering its preference for high temperatures.</p>
+<p>Hopefully after reading this you have some idea of how you might make a similar function yourself! Thanks for reading!</p>
+</section>
 </section>
 <section id="citations" class="level2">
 <h2 class="anchored" data-anchor-id="citations">Citations</h2>
-<section id="data" class="level4">
-<h4 class="anchored" data-anchor-id="data">Data</h4>
 <p>Flanders Marine Institute (VLIZ). (n.d.). <em>Exclusive Economic Zone (EEZ) boundaries</em>. Maritime Boundaries Database, version unknown. Retrieved from https://www.marineregions.org/eez.php (Accessed: November 29, 2024)</p>
 <p>General Bathymetric Chart of the Oceans (GEBCO) Compilation Group. (2022). <em>GEBCO_2022 Grid</em> [Data set]. https://doi.org/10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c (Accessed: November 29, 2024)</p>
 <p>National Oceanic and Atmospheric Administration (NOAA). (2018). <em>Daily Global 5km Satellite Sea Surface Temperature Anomaly (Version 3.1)</em>. NOAA Coral Reef Watch. Retrieved from https://coralreefwatch.noaa.gov/product/5km/index_5km_ssta.php (Accessed: November 29, 2024)</p>
-</section>
+<p>SeaLifeBase. (n.d.). Ruditapes philippinarum (Adams &amp; Reeve, 1850): Japanese carpet shell. Retrieved November 30, 2024, from https://www.sealifebase.ca/summary/Ruditapes-philippinarum.html</p>
 </section>
 </section>
 
