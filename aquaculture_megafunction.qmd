@@ -13,15 +13,13 @@ editor_options:
   chunk_output_type: console
 ---
 
-# EDS223: Homework Assignment 4
+# Fun with Fish Functions!
 
-## Fun with Fish Functions!
-
-#### Creating A Function That Will Map Suitable EEZ Regions Based On Species
+## Creating A Function That Will Map Suitable EEZ Regions Based On Species
 
 ##### by Amanda G. Overbye
 
-The goal of this project is to have one single function that can take information about the depths a species can live in, the suitable temperature range for the species, and the species name, and produce a map of the West Coast showing which EEZ regions are ideal for aquaculture of that species. This function is going to be doing a lot, so from now on I will refer to it as the Mega Function™. Throughout this project, I will be giving an overview of how I accomplish this task and narrating along the way so hopefully whoever is reading this can make a similar function if you want to! I will be explaining what I am doing as I do it, and there will be code chunks if you want to follow along in the programming.
+The goal of this project is to have one single function that can take information about the depths a species can live in, the suitable temperature range for the species, and the species name, and produce a map of the West Coast showing which EEZ regions are ideal for aquaculture of that species. This function is going to be doing a lot, so from now on I will refer to it as the Mega Function™. Throughout this project, I will be giving an overview of how I accomplish this task and narrating along the way so hopefully whoever is reading this can make a similar function if you want to! I will be explaining what I am doing as I do it, and there will be code chunks if you want to follow along in the programming. 
 
 ```{r}
 # Load libraries
