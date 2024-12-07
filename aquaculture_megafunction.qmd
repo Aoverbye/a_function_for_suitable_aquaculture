@@ -508,6 +508,7 @@ We can see from the map that the region with the most suitable habitat is in the
 
 Hopefully, after reading this, you have some idea of how to create a similar mega function yourself! Thanks for reading! 
 
+
 ## Citations
 
 Flanders Marine Institute (VLIZ). (n.d.). *Exclusive Economic Zone (EEZ) boundaries*. Maritime Boundaries Database, version unknown. Retrieved from https://www.marineregions.org/eez.php (Accessed: November 29, 2024)
