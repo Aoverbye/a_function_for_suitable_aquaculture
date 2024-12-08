@@ -10,6 +10,15 @@ This repository contains a friendly, step-by-step guide for creating a function,
 
 ### Repository
 
+``` bash
+a_function_for_suitable_aquaculture
+│   README.md
+|   aquaculture_function.Rproj
+|   aquaculture_megafunction.html
+|   aquaculture_megafunction.qmd
+|   .gitignore
+```
+
 ### Skills Used
 
 This repository uses the following skills:
