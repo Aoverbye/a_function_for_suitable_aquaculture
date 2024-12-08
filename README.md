@@ -46,6 +46,7 @@ Sea Surface Temperature (SST) Data
 This dataset contains annual average SST data from 2008 to 2012, sourced from NOAA. The data is used in its GeoTIFF format, with temperature values in Kelvin.
 https://coralreefwatch.noaa.gov/product/5km/index_5km_ssta.php (Accessed: November 29, 2024)
 
+
 Bathymetry (Depth) Data
 The depth data, also from NOAA, provides information on the ocean floor's depth in meters. The data is in GeoTIFF format. https://doi.org/10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c (Accessed: November 29, 2024)
 
@@ -53,4 +54,15 @@ The depth data, also from NOAA, provides information on the ocean floor's depth 
 Exclusive Economic Zone (EEZ) Data
 This shapefile outlines the boundaries of U.S. EEZ regions along the West Coast. The data is sourced from NOAA.
 https://www.marineregions.org/eez.php (Accessed: November 29, 2024)
+
+
+### References
+
+Flanders Marine Institute (VLIZ). (n.d.). *Exclusive Economic Zone (EEZ) boundaries*. Maritime Boundaries Database, version unknown. Retrieved from https://www.marineregions.org/eez.php (Accessed: November 29, 2024)
+
+General Bathymetric Chart of the Oceans (GEBCO) Compilation Group. (2022). *GEBCO_2022 Grid* \[Data set\]. https://doi.org/10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c (Accessed: November 29, 2024)
+
+National Oceanic and Atmospheric Administration (NOAA). (2018). *Daily Global 5km Satellite Sea Surface Temperature Anomaly (Version 3.1)*. NOAA Coral Reef Watch. Retrieved from https://coralreefwatch.noaa.gov/product/5km/index_5km_ssta.php (Accessed: November 29, 2024)
+
+SeaLifeBase. (n.d.). *Ruditapes philippinarum (Adams & Reeve, 1850): Japanese carpet shell*. Retrieved November 30, 2024, from https://www.sealifebase.ca/summary/Ruditapes-philippinarum.html
 
