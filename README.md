@@ -39,3 +39,18 @@ This repository uses the following skills:
 
 -   Creating custom R functions to automate data processing, analysis, and map generation.
 -   Structuring code for efficiency and reuse (Mega Function™ concept).
+
+### Data
+
+Sea Surface Temperature (SST) Data
+This dataset contains annual average SST data from 2008 to 2012, sourced from NOAA. The data is used in its GeoTIFF format, with temperature values in Kelvin.
+https://coralreefwatch.noaa.gov/product/5km/index_5km_ssta.php (Accessed: November 29, 2024)
+
+Bathymetry (Depth) Data
+The depth data, also from NOAA, provides information on the ocean floor's depth in meters. The data is in GeoTIFF format. https://doi.org/10.5285/e0f0bb80-ab44-2739-e053-6c86abc0289c (Accessed: November 29, 2024)
+
+
+Exclusive Economic Zone (EEZ) Data
+This shapefile outlines the boundaries of U.S. EEZ regions along the West Coast. The data is sourced from NOAA.
+https://www.marineregions.org/eez.php (Accessed: November 29, 2024)
+
