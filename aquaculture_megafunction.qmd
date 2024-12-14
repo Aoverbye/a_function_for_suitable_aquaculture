@@ -457,6 +457,8 @@ area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name)
   # Step 6: Calculate the sum of suitable areas within each region (sum of 1s)
   region_sums <- st_extract(suitable_test, wc_regions_clean, fun = sum, na.rm = TRUE)
   
+  print(region_sums)
+  
   # Step 7: Create the heatmap using the suitable region sums
   area_map <- tm_shape(wc_regions_clean) +
     tm_polygons() +  # Draw region boundaries
@@ -517,15 +519,9 @@ National Oceanic and Atmospheric Administration (NOAA). (2018). *Daily Global 5k
 
 SeaLifeBase. (n.d.). *Ruditapes philippinarum (Adams & Reeve, 1850): Japanese carpet shell*. Retrieved November 30, 2024, from https://www.sealifebase.ca/summary/Ruditapes-philippinarum.html
 
-# DRAFT SECTION DELETE
 
+# TEST DELETE LATER
 
-```{r}
-eez_suitable <- zonal(x = suitable_area, 
-                      z = eez_raster, # Raster representing zones
-                      fun = 'sum', # To add up total area
-                      na.rm = TRUE)
-```
 
 ```{r}
 # Function to create a map showing suitable habitat for a species based on temperature and depth criteria
@@ -535,8 +531,9 @@ area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name)
   # Create a logical raster (TRUE/FALSE) where depths are within the specified range
   depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
   
-  # Convert logical values (TRUE/FALSE) to integers (1/0) using 'st_apply'
-  depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
+    # Manually replace FALSE with 0
+ depth_range[depth_range == FALSE] <- 0
+ depth_range[depth_range == TRUE] <- 1
   
   # Set any NA values to 0 (indicating unsuitable depth)
   depth_range[is.na(depth_range)] <- 0
@@ -545,8 +542,9 @@ area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name)
   # Create a logical raster (TRUE/FALSE) where SST is within the specified range
   sst_range <- (sst_clean >= min_temp & sst_clean <= max_temp)
   
-  # Convert logical values (TRUE/FALSE) to integers (1/0) and preserve stars format
-  sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
+  # Manually replace FALSE with 0
+  sst_range[sst_range == FALSE] <- 0
+  sst_range[sst_range == TRUE] <- 1
   
   # Set any NA values to 0 (indicating unsuitable temperature)
   sst_range[is.na(sst_range)] <- 0
@@ -568,253 +566,24 @@ area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name)
   # Step 5: Multiply the suitable area raster by the region raster to isolate suitable regions
   suitable_test <- combo_range * region_raster
   
-   # Step 6: Use Zonal Statistics to Aggregate the Suitable Areas
-  # Here, we use zonal algebra to sum the suitable habitat area within each region
-  suitable_area <- zonal(x = suitable_test, 
-                         z = region_raster, # Raster representing zones
-                         fun = 'sum',       # Sum of suitable habitat pixels
-                         na.rm = TRUE)
-  
-  # Step 7: Create the heatmap using the suitable region sums
-  area_map <- tm_shape(wc_regions_clean) +
-    tm_polygons() +  # Draw region boundaries
-    tm_shape(region_sums) +  # Add region sums (suitable habitat area)
-    tm_fill(palette = "YlGnBu", title = "Suitable Habitat Area") +  # Color the regions by suitable habitat area
-    tm_borders() +  # Add borders around the regions
-    tm_compass(position = c(0.64, 0.43), type = "8star", size = 3) +  # Add compass
-    tm_scale_bar(position = c(0.58, 0.35)) +  # Add scale bar
-    tm_layout(
-      main.title = paste("Suitable Areas for", species_name, "Aquaculture"), 
-      asp = 1,
-      main.title.size = 1,
-      panel.show = FALSE,
-      frame = FALSE,
-      inner.margins = c(0.1, 0.1, 0, 0.3),
-      main.title.position = c("center", "top"),
-      legend.position = c(0.58, 0.65)
-    ) + 
-    tm_credits(
-      text = paste("Best-Suited EEZ Regions for", species_name, 
-                   "Aquaculture Development\nBased On Water Depth and Average Surface Temperature"),
-      position = c(0.1, 0.01),  
-      size = 1,
-      align = "left"
-    )
-  
-  # Step 8: Print the map
-  print(area_map)
-}
-```
-
-# TRYING TO RE DO IT BUT THIS TIME USING THE terra PACKAGE
-
-```{r}
-# If sst_clean and depth_clean are stars objects, convert them to terra rasters
-sst_raster <- rast(sst_clean)  # Convert SST data to terra raster
-depth_raster <- rast(depth_clean)  # Convert Depth data to terra raster
-
-# Check if conversion was successful
-plot(sst_raster)
-plot(depth_raster)
-
-```
-
-
-```{r}
-# Reclassify SST (Temperature) based on the desired range (11°C to 30°C)
-suitable_sst <- (sst_raster >= 11 & sst_raster <= 30) * 1  # 1 for suitable, 0 for unsuitable
-
-# Reclassify Depth based on the desired range (-70m to 0m)
-suitable_depth <- (depth_raster >= -70 & depth_raster <= 0) * 1  # 1 for suitable, 0 for unsuitable
-
-# Plot the reclassified SST and Depth maps
-plot(suitable_sst)
-plot(suitable_depth)
-
-```
-
-```{r}
-# Combine the suitable SST and Depth rasters (both need to be 1 for suitable areas)
-suitable_locations <- suitable_sst * suitable_depth
-
-# Plot the combined map of suitable locations
-plot(suitable_locations)
-
-```
-
-```{r}
- # Step 4: Rasterize the region shapefile (wc_regions_clean) to match the suitable area raster
-  # Rasterize the region shapefile based on the "rgn" field, aligning it with the suitable area raster
-  region_raster <- rasterize(wc_regions_clean, suitable_locations, field = "rgn", fun = "count")
-  
-  # Step 5: Multiply the suitable area raster by the region raster to isolate suitable regions
-  suitable_test <- suitable_locations * region_raster
-```
-
-```{r}
-# Step 6: Use Zonal Statistics to Aggregate the Suitable Areas
-  # Here, we use zonal algebra to sum the suitable habitat area within each region
-  region_sums2 <- zonal(x = suitable_test, 
-                         z = region_raster, # Raster representing zones
-                         fun = 'sum',       # Sum of suitable habitat pixels
-                         na.rm = TRUE)
-```
-
-```{r}
-agg_raster <- region_raster
-
-# Assign the summarized values (from zonal statistics) back to the raster
-agg_raster[] <- region_sums2$sum[match(region_raster[], region_sums2$rgn)]
-
-# Plot the aggregated raster
-plot(agg_raster, main = "Aggregated Suitable Habitat Area by Region")
-```
-
-
-```{r}
-tm_shape(wc_regions_clean) +
-  tm_polygons() +  # Visualize the boundaries of the EEZ regions
-  tm_shape(region_sums2) +
-  tm_fill(palette = "YlGnBu", title = "Suitable Habitat Area") +  # Add color representing habitat suitability
-  tm_borders() +  # Overlay region borders for clarity
-  tm_compass(position = c(0.64, 0.43), type = "8star", size = 3) +  # Add a compass to indicate direction
-  tm_scale_bar(position = c(0.58, 0.35)) +  # Include a scale bar for distance reference
-  tm_layout(
-    main.title = "Suitable Areas for Aquaculture Development",  # Set the map title
-    asp = 1, 
-    main.title.size = 1, 
-    panel.show = FALSE, 
-    frame = FALSE, 
-    inner.margins = c(0.1, 0.1, 0, 0.3), 
-    main.title.position = c("center", "top"), 
-    legend.position = c(0.58, 0.65)
-  ) +
-  tm_credits(
-    text = "Best-Suited EEZ Regions for Aquaculture Development Based On Depth and Temperature", 
-    position = c(0.1, 0.05), size = 1, align = "center"  # Display credits at the bottom
-  )
-```
-
-```{r}
-# Reclassify Sea Surface Temperature (SST) to identify suitable areas based on temperature range
-# Suitable SST range: 11°C to 30°C
-suitable_sst <- (sst_clean >= 11 & sst_clean <= 30)
-
-# Convert logical values (TRUE/FALSE) to integers (1/0) to create a binary map of suitable areas
-# Preserve the 'stars' format while applying the conversion
-suitable_sst <- st_apply(suitable_sst, c("x", "y"), function(x) as.integer(x))
-
-# Plot the reclassified SST map
-plot(suitable_sst)
-
-# Reclassify Depth to identify suitable areas based on depth range
-# Suitable Depth range: -24m to 0m (depths above sea level)
-suitable_depth <- (depth_clean >= -70 & depth_clean <= 0)
-
-# Convert logical values (TRUE/FALSE) to integers (1/0) to create a binary map of suitable areas
-# Preserve the 'stars' format while applying the conversion
-suitable_depth <- st_apply(suitable_depth, c("x", "y"), function(x) as.integer(x))
-
-# Plot the reclassified Depth map
-plot(suitable_depth)
-
-# Combine SST and Depth suitability maps by multiplying them
-# The result will be a binary map indicating areas that are suitable for both SST and Depth
-suitable_locations <- suitable_sst * suitable_depth
-```
-
-
-```{r}
-# Step 1: Rasterize the wc_regions_clean shapefile to match the suitable_locations raster
-region_raster <- st_rasterize(wc_regions_clean, suitable_locations, field = "rgn", fun = "count")
-
-# Step 2: Multiply suitable_locations raster by the region_raster
-suitable_by_region <- suitable_locations * region_raster
-
-# Step 3: Sum values within each region
-region_sums <- st_extract(suitable_by_region, wc_regions_clean, fun = sum, na.rm = TRUE)
-
-# Step 4: Test plot
-plot(region_sums)
-```
-
-```{r}
-suitable_by_region <- rast(suitable_by_region)
-region_raster <- rast(region_raster)
-```
-
-
-```{r}
-# Step 6: Use Zonal Statistics to Aggregate the Suitable Areas
-  # Here, we use zonal algebra to sum the suitable habitat area within each region
-  region_sums2 <- zonal(x = suitable_by_region, 
-                         z = region_raster, # Raster representing zones
-                         fun = 'sum',       # Sum of suitable habitat pixels
-                         na.rm = TRUE)
-```
-
-```{r}
-region_sums2 <- rename(region_sums2, area = area_m2_area_m2)
-```
-
-```{r}
-print(paste0("Oyster suitable area in ", region_sums2$rgn[3], " is ", round(region_sums2$area[3], digits = 2), 'km'))
-```
-
-
-
-```{r}
-# Function to create a map showing suitable habitat for a species based on temperature and depth criteria
-test_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
-  
-  # Step 1: Reclassify Depth (logical 1/0 based on specified range)
-  # Create a logical raster (TRUE/FALSE) where depths are within the specified range
-  depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
-  
-  # Convert logical values (TRUE/FALSE) to integers (1/0) using 'st_apply'
-  depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
-  
-  # Set any NA values to 0 (indicating unsuitable depth)
-  depth_range[is.na(depth_range)] <- 0
-  
-  # Step 2: Reclassify Sea Surface Temperature (SST) (logical 1/0 based on specified range)
-  # Create a logical raster (TRUE/FALSE) where SST is within the specified range
-  sst_range <- (sst_clean >= min_temp & sst_clean <= max_temp)
-  
-  # Convert logical values (TRUE/FALSE) to integers (1/0) and preserve stars format
-  sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
-  
-  # Set any NA values to 0 (indicating unsuitable temperature)
-  sst_range[is.na(sst_range)] <- 0
-  
-  # Step 3: Combine SST and Depth Ranges
-  # Create a combined suitability raster where both depth and SST conditions are met
-  combo_range <- sst_range * depth_range
-  
-  # Set any NA values in the combined raster to 0
-  combo_range[is.na(combo_range)] <- 0
-  
-  # Convert the suitable area into a 'stars' object
-  combo_range <- st_as_stars(combo_range)
-  
-  # Step 4: Rasterize the region shapefile (wc_regions_clean) to match the suitable area raster
-  # Rasterize the region shapefile based on the "rgn" field, aligning it with the suitable area raster
-  region_raster <- st_rasterize(wc_regions_clean, combo_range, field = "rgn", fun = "first")
-  
-  # Step 5: Multiply the suitable area raster by the region raster to isolate suitable regions
-  suitable_region <- combo_range * region_raster
-  
-  suitable_by_region <- rast(suitable_by_region)
-  region_raster <- rast(region_raster)
-  
-  region_sums2 <- zonal(x = suitable_by_region, 
-                         z = region_raster, # Raster representing zones
-                         fun = 'sum',       # Sum of suitable habitat pixels
-                         na.rm = TRUE)
-
   # Step 6: Calculate the sum of suitable areas within each region (sum of 1s)
   region_sums <- st_extract(suitable_test, wc_regions_clean, fun = sum, na.rm = TRUE)
   
+  # Ensure there are no NAs in the area calculation
+  region_sums$area_km2 <- ifelse(!is.na(region_sums$values), region_sums$values * (st_area(region_sums) / 1e6), 0)  # Convert to km²
+  
+  # Convert area to suitable units (million km², billion km², etc.)
+  region_sums$area_km2_scaled <- ifelse(region_sums$area_km2 >= 1e9, 
+                                         region_sums$area_km2 / 1e9,  # Convert to billion km²
+                                         ifelse(region_sums$area_km2 >= 1e6, 
+                                                region_sums$area_km2 / 1e6,  # Convert to million km²
+                                                region_sums$area_km2))  # Leave as km²
+  
+  # Set appropriate units for the legend
+  region_sums$unit <- ifelse(region_sums$area_km2 >= 1e9, "Billion km²", 
+                              ifelse(region_sums$area_km2 >= 1e6, "Million km²", "km²"))
+  
+  
   # Step 7: Create the heatmap using the suitable region sums
   area_map <- tm_shape(wc_regions_clean) +
     tm_polygons() +  # Draw region boundaries
@@ -847,35 +616,89 @@ test_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name)
 ```
 
 ```{r}
-# Assuming region_sums2 has region sums, and region_sums is a stars object
+area_map_fun(11, 30, -70, 0, "Oyster")
+```
 
-# Step 1: Extract the region sums and reshape region_sums2
-region_sums2 <- region_sums2 %>%
-  rename(area_km2 = area) %>%
-  select(rgn_id_rgn_id, area_km2, average_annual_sst_2008.tif, NA._NA.)
+And thats the final function!
 
-# Step 2: Extract the spatial data from the 'stars' object (region_sums)
-# We need to extract the values corresponding to the regions
+Now we can use it for any aquaculture-relevant species, so I will use it on the Manila Clam (*Ruditapes philippinarum*)! According to sealifebase.ca, Manilla clams prefer temperatures of 18°C - 35°C and depths of 0 - 100 meters. So I will put that info in my function and a map will appear!
 
-# Assuming that 'rgn_id' is the region identifier and corresponds to regions in region_sums
-region_sums_values <- as.data.frame(region_sums) %>%
-  select(rgn_id, average_annual_sst_2008.tif)
+```{r}
+area_map_fun(18, 35, -100, 0, "Manilla Clam")
+```
 
-# Step 3: Merge region_sums2 with the region sums values
-combined_data <- left_join(region_sums2, region_sums_values, by = "rgn_id_rgn_id")
 
-# Step 4: Create a new raster (if necessary) with the region sums and suitable area data
-# This step is needed for the heatmap creation
-# Assuming that the region boundaries are already represented in the region_sums stars object
+```{r}
+area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name) {
+  
+  # Step 1: Reclassify Depth (logical 1/0 based on specified range)
+  depth_range <- (depth_clean >= min_depth & depth_clean <= max_depth)
+  depth_range <- st_apply(depth_range, c("x", "y"), function(x) as.integer(x))
+  depth_range[is.na(depth_range)] <- 0  # Set NA values to 0
+  
+  # Step 2: Reclassify Sea Surface Temperature (SST) (logical 1/0 based on specified range)
+  sst_range <- (sst_clean >= min_temp & sst_clean <= max_temp)
+  sst_range <- st_apply(sst_range, c("x", "y"), function(x) as.integer(x))
+  sst_range[is.na(sst_range)] <- 0  # Set NA values to 0
+  
+  # Step 3: Combine SST and Depth Ranges
+  combo_range <- sst_range * depth_range
+  combo_range[is.na(combo_range)] <- 0  # Set any NA values in the combined raster to 0
+  combo_range <- st_as_stars(combo_range)  # Convert to 'stars' object
+  
+  # Step 4: Rasterize the region shapefile
+  region_raster <- st_rasterize(wc_regions_clean, combo_range, field = "rgn", fun = "first")
+  
+  # Step 5: Multiply the suitable area raster by the region raster
+  suitable_test <- combo_range * region_raster
+  
+  # Step 6: Calculate the sum of suitable areas within each region (sum of 1s)
+  region_sums <- st_extract(suitable_test, wc_regions_clean, fun = sum, na.rm = TRUE)
+  
+  # Step 7: Convert the sum to area in km²
+  region_sums$area_km2 <- region_sums$values * (st_area(region_sums) / 1e6)  # Convert to km²
+  
+  # Step 8: Convert area to appropriate units (million km², billion km², etc.)
+  region_sums$area_km2_scaled <- region_sums$area_km2
+  region_sums$unit <- "km²"  # Default unit
+  
+  region_sums$area_km2_scaled <- ifelse(region_sums$area_km2 >= 1e9, region_sums$area_km2 / 1e9, 
+                                         ifelse(region_sums$area_km2 >= 1e6, region_sums$area_km2 / 1e6, region_sums$area_km2))
+  
+  region_sums$unit <- ifelse(region_sums$area_km2 >= 1e9, "Billion km²", 
+                              ifelse(region_sums$area_km2 >= 1e6, "Million km²", "km²"))
+  
+  # Step 9: Create the heatmap using the suitable region sums
+  area_map <- tm_shape(wc_regions_clean) +
+    tm_polygons() +  # Draw region boundaries
+    tm_shape(region_sums) +  # Add the region sums
+    tm_fill(col = "area_km2_scaled", palette = "YlGnBu", title = "Suitable Habitat Area") +  # Color by scaled area
+    tm_borders() +  # Add borders around the regions
+    tm_compass(position = c(0.64, 0.43), type = "8star", size = 3) +  # Add compass
+    tm_scale_bar(position = c(0.58, 0.35)) +  # Add scale bar
+    tm_layout(
+      main.title = paste("Suitable Areas for", species_name, "Aquaculture"), 
+      asp = 1,
+      main.title.size = 1,
+      panel.show = FALSE,
+      frame = FALSE,
+      inner.margins = c(0.1, 0.1, 0, 0.3),
+      main.title.position = c("center", "top"),
+      legend.position = c(0.58, 0.65)
+    ) + 
+    tm_credits(
+      text = paste("Best-Suited EEZ Regions for", species_name, 
+                   "Aquaculture Development\nBased On Water Depth and Average Surface Temperature"),
+      position = c(0.1, 0.01),  
+      size = 1,
+      align = "left"
+    )
+  
+  # Step 10: Print the map
+  print(area_map)
+}
 
-# Extract the suitable area as a new layer from region_sums (assuming it's stored in one of the attributes)
-region_raster <- region_sums["area_km2"]  # Change this to the correct attribute
 
-# Plot the region sums as a heatmap (coloring by suitable area)
-tm_shape(region_raster) +
-  tm_raster(palette = "YlGnBu", title = "Suitable Habitat Area") +
-  tm_shape(combined_data) +
-  tm_borders(lwd = 2) +
-  tm_layout(main.title = "Suitable Area by Region", legend.position = c(0.7, 0.1))
+
 ```
 
