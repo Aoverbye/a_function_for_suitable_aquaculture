@@ -463,7 +463,7 @@ area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name)
   area_map <- tm_shape(wc_regions_clean) +
     tm_polygons() +  # Draw region boundaries
     tm_shape(region_sums) +  # Add region sums (suitable habitat area)
-    tm_fill(palette = "YlGnBu", title = "Suitable Habitat Area") +  # Color the regions by suitable habitat area
+    tm_fill(palette = "YlGnBu", title = "Suitable Habitat Area km²") +  # Color the regions by suitable habitat area
     tm_borders() +  # Add borders around the regions
     tm_compass(position = c(0.64, 0.43), type = "8star", size = 3) +  # Add compass
     tm_scale_bar(position = c(0.58, 0.35)) +  # Add scale bar
@@ -479,8 +479,9 @@ area_map_fun <- function(min_temp, max_temp, min_depth, max_depth, species_name)
     ) + 
     tm_credits(
       text = paste("Best-Suited EEZ Regions for", species_name, 
-                   "Aquaculture Development\nBased On Water Depth and Average Surface Temperature"),
-      position = c(0.1, 0.01),  
+                   "Aquaculture Development\nBased On Water Depth and Average Surface Temperature.
+                   bln = billion, mln = million"),
+      position = c(0.01, 0.001),  
       size = 1,
       align = "left"
     )
